@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using BepInEx;
 using VentLib.Commands;
 using VentLib.Localization;
 using VentLib.Logging;
@@ -23,15 +24,16 @@ namespace VentLib;
 
 //if the client has an unsupported addon it's rpcs get disabled completely CHECK!
 //if the client is missing an addon then the host's rpcs from that addon to that client get disabled
-
-public class Vents
+[BepInAutoPlugin("com.tealeaf.VentLib")]
+[BepInProcess("Among Us.exe")]
+public partial class Vents
 {
     public static readonly uint[] BuiltinRPCs = Enum.GetValues<VentCall>().Select(rpc => (uint)rpc).ToArray();
     internal static VersionControl VersionControl { get; } = new();
     public static CommandRunner CommandRunner = new();
     
     internal static Assembly RootAssemby = null!;
-    internal static Harmony Harmony = new("com.tealeaf.VentLib");
+    internal static Harmony Harmony = new(Id);
     internal static readonly Dictionary<uint, List<ModRPC>> RpcBindings = new();
     internal static readonly Dictionary<Assembly, VentControlFlag> RegisteredAssemblies = new();
     internal static readonly Dictionary<Assembly, string> AssemblyNames = new();

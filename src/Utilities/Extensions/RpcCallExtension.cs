@@ -35,7 +35,7 @@ public static class RpcCallExtension
             RpcCalls.ClearVote => "ClearVote",
             RpcCalls.AddVote => "AddVote",
             RpcCalls.CloseDoorsOfType => "CloseDoorsOfType",
-            RpcCalls.RepairSystem => "RepairSystem",
+            // RpcCalls.RepairSystem => "RepairSystem",
             RpcCalls.SetTasks => "SetTasks",
             RpcCalls.ClimbLadder => "ClimbLadder",
             RpcCalls.UsePlatform => "UsePlatform",

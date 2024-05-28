@@ -8,6 +8,6 @@ public class GameOptionsInserter: IRpcInserter<IGameOptions>
 {
     public void Insert(IGameOptions value, MessageWriter writer)
     {
-        writer.WriteBytesAndSize(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(value));
+        writer.WriteBytesAndSize(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(value, false));
     }
 }
