@@ -1,3 +1,5 @@
+## *Note: This repository is the OFFICIAL continuation of Vent Framework due to the original creator giving the project up.*
+
 ### **Version 1.0.0**
 The first official release of VentLib/VentFramework. These features are still experimental but this release marks the turning point where I feel the framework has enough features that should be stable enough for public use. As traffic comes in and people begin using the framework I will maintain and fix all issues.
 ### **Features:**
