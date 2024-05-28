@@ -12,9 +12,16 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
-        <Authors>ImaMapleTree</Authors>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
+
+    <PropertyGroup>
+		<GamePlatform Condition="'$(GamePlatform)' == ''">Steam</GamePlatform>
+		<GameVersion Condition="'$(GamePlatform)' == 'Steam'">2024.3.5</GameVersion>
+		<GameVersion Condition="'$(GamePlatform)' == 'Itch'">2024.3.5</GameVersion>
+
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
     
     <ItemGroup>
         <PackageReference Include="Costura.Fody" Version="5.7.0">

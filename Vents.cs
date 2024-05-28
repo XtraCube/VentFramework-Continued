@@ -19,6 +19,7 @@ using VentLib.Utilities.Attributes;
 using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Harmony;
 using VentLib.Version;
+using xCloud;
 
 namespace VentLib;
 
@@ -26,7 +27,7 @@ namespace VentLib;
 //if the client is missing an addon then the host's rpcs from that addon to that client get disabled
 [BepInAutoPlugin("com.tealeaf.VentLib")]
 [BepInProcess("Among Us.exe")]
-public partial class Vents
+public partial class Vents : BasePlugin
 {
     public static readonly uint[] BuiltinRPCs = Enum.GetValues<VentCall>().Select(rpc => (uint)rpc).ToArray();
     internal static VersionControl VersionControl { get; } = new();
@@ -45,6 +46,11 @@ public partial class Vents
     static Vents()
     {
         BepInExLogListener.BindToUnity();
+    }
+
+    public override void Load()
+    {
+        Initialize();
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -123,7 +129,7 @@ public partial class Vents
         if (_initialized) return;
         MainThreadAnchor.IsMainThread();
 
-        NoDepLogger.High($"Initializing VentFramework {Assembly.GetExecutingAssembly().GetName().Version!.ToString(4)} by Tealeaf");
+        NoDepLogger.High($"Initializing VentFramework {Assembly.GetExecutingAssembly().GetName().Version!.ToString(4)} by discussions (mainly tealeaf tho)");
         
         var _ = Async.AUCWrapper;
         RootAssemby = Assembly.GetCallingAssembly();
@@ -131,6 +137,7 @@ public partial class Vents
         Register(Assembly.GetExecutingAssembly());
         Harmony.PatchAll(Assembly.GetExecutingAssembly());
         _initialized = true;
+        NoDepLogger.High("Sucessfully initialized VentFramework.");
     }
     
     public static void BlockClient(Assembly assembly, int clientId)
