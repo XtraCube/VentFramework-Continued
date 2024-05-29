@@ -46,6 +46,7 @@ public partial class Vents : BasePlugin
     static Vents()
     {
         BepInExLogListener.BindToUnity();
+        NoDepLogger.High("Updated Unity Log UI.");
     }
 
     public override void Load()
