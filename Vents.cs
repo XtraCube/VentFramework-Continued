@@ -25,7 +25,7 @@ namespace VentLib;
 
 //if the client has an unsupported addon it's rpcs get disabled completely CHECK!
 //if the client is missing an addon then the host's rpcs from that addon to that client get disabled
-[BepInAutoPlugin("com.tealeaf.VentLib")]
+[BepInAutoPlugin("com.discussions.VentLib")]
 [BepInProcess("Among Us.exe")]
 public partial class Vents : BasePlugin
 {

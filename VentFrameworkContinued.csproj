@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Title>VentFramework Continued</Title>
+        <Title>VentFrameworkContinued</Title>
         <Description>A modding framework for the popular social deduction game Among Us</Description>
         <!-- <Version>1.0.0</Version> -->
         <RootNamespace>VentLib</RootNamespace>
         <TargetFramework>net6.0</TargetFramework>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <RepositoryUrl>https://github.com/music-discussion/LotusContinued/</RepositoryUrl>
+        <RepositoryUrl>https://github.com/music-discussion/VentFramework-Continued/</RepositoryUrl>
         <AmongUs>D:\Games\AmongUs\steam\Lotus</AmongUs>
         <RepositoryType>git</RepositoryType>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -30,9 +30,9 @@
         </PackageReference>
 
 
-        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.691" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.674" PrivateAssets="all" />
 
-        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap3">
+        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap2">
             <Aliases>JetbrainsAnnotations</Aliases>
         </PackageReference>
 
