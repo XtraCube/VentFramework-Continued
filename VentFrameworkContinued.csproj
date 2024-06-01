@@ -2,7 +2,7 @@
     <PropertyGroup>
         <Title>VentFrameworkContinued</Title>
         <Description>A modding framework for the popular social deduction game Among Us</Description>
-        <!-- <Version>1.0.0</Version> -->
+        <Version>1.0.1</Version>
         <RootNamespace>VentLib</RootNamespace>
         <TargetFramework>net6.0</TargetFramework>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -49,6 +49,11 @@
         <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" PrivateAssets="all" />
         
         <PackageReference Include="YamlDotNet" Version="12.3.1" PrivateAssets="all" />
+
+        <PackageReference Include="GitInfo" Version="3.3.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
