@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using VentLib.Logging.Default;
 using VentLib.Options.Game.Impl;
 using VentLib.Options.Game.Interfaces;
 using VentLib.Utilities.Optionals;
@@ -14,7 +15,7 @@ public sealed class VanillaMainTab : VanillaTab
     public static VanillaMainTab Instance = null!;
     private static IVanillaMenuRenderer _renderer = new MainMenuRenderer();
     
-    private UnityOptional<SpriteRenderer> highlight = UnityOptional<SpriteRenderer>.Null();
+    // private UnityOptional<SpriteRenderer> highlight = UnityOptional<SpriteRenderer>.Null();
     private UnityOptional<GameOptionsMenu> innerMenu = UnityOptional<GameOptionsMenu>.Null();
 
     public VanillaMainTab()
@@ -36,9 +37,9 @@ public sealed class VanillaMainTab : VanillaTab
     public override void Setup(MenuInitialized initialized)
     {
         TabButton = UnityOptional<GameObject>.NonNull(initialized.GameTab);
-        RelatedMenu = UnityOptional<GameObject>.NonNull(initialized.GameSettingMenu.RegularGameSettings);
-        highlight = UnityOptional<SpriteRenderer>.Of(initialized.GameSettingMenu.GameSettingsHightlight);
-        innerMenu = RelatedMenu.UnityMap(menu => menu.transform.GetComponentsInChildren<Transform>().First(c => c.name.Equals("SliderInner")).GetComponent<GameOptionsMenu>());
+        RelatedMenu = UnityOptional<GameObject>.NonNull(initialized.GameSettingMenu.GameSettingsTab.gameObject);
+        // highlight = UnityOptional<SpriteRenderer>.Of(initialized.GameSettingMenu.GameSettingsHightlight);
+        innerMenu = UnityOptional<GameOptionsMenu>.Of(initialized.GameSettingMenu.GameSettingsTab);
 
         var button = initialized.GameTab.GetComponentInChildren<PassiveButton>();
         button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
@@ -56,11 +57,11 @@ public sealed class VanillaMainTab : VanillaTab
         var menu = innerMenu.Get();
         
         options.ForEach(opt => GameOptionController.ValidateOptionBehaviour(opt, false));
-        _renderer.Render(menu, options, menu.Children.Skip(1), GameOptionController.RenderOptions);
+        _renderer.Render(menu, options, menu.Children.ToArray().Skip(1), GameOptionController.RenderOptions);
         
         return new List<GameOption>();
     }
-    
 
-    protected override UnityOptional<SpriteRenderer> Highlight() => highlight;
+    // could not find a glpyh or anything for this so we'll just print to console for now...
+    protected override void SetGlyphEnabled(bool enabled) => NoDepLogger.Fatal("VanillaManTab.SetGlyphEnabled is being called when it should not be.");
 }

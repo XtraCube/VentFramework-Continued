@@ -14,8 +14,8 @@ public static class GeneralRPC
                 writer.WritePacked(clientId);
             writer.StartMessage(1); //0x01 Data
             {
-                writer.WritePacked(GameData.Instance.NetId);
-                GameData.Instance.Serialize(writer, true);
+                writer.WritePacked(GameData.Instance.PlayerInfoPrefab.NetId);
+                GameData.Instance.PlayerInfoPrefab.Serialize(writer, true);
             }
             writer.EndMessage();
         }

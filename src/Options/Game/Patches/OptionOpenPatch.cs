@@ -6,7 +6,7 @@ using VentLib.Utilities.Optionals;
 namespace VentLib.Options.Game.Patches;
 
 [HarmonyPriority(Priority.First)]
-[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
+[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.CreateSettings))]
 internal static class OptionOpenPatch
 {
     public static UnityOptional<StringOption> Template = UnityOptional<StringOption>.Null();

@@ -130,7 +130,7 @@ public partial class Vents : BasePlugin
         if (_initialized) return;
         MainThreadAnchor.IsMainThread();
 
-        NoDepLogger.High($"Initializing VentFramework {Assembly.GetExecutingAssembly().GetName().Version!.ToString(4)} by discussions (mainly tealeaf tho)");
+        NoDepLogger.High($"Initializing VentFramework {Assembly.GetExecutingAssembly().GetName().Version!.ToString(4)}");
         
         var _ = Async.AUCWrapper;
         RootAssemby = Assembly.GetCallingAssembly();

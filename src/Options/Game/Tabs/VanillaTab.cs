@@ -20,14 +20,14 @@ public abstract class VanillaTab : IGameOptionTab
     public void Activate()
     {
         log.Info($"Activated Vanilla Tab: \"{GetType().Name}\"", "TabSwitch");
-        Highlight().IfPresent(highlight => highlight.enabled = true);
+        SetGlyphEnabled(true);
         RelatedMenu.Handle(menu => menu.SetActive(true), () => log.Warn($"Error Activating Menu for {GetType().Name}"));
     }
 
     public void Deactivate()
     {
         log.Debug($"Deactivated Vanilla Tab: \"{GetType().Name}\"", "TabSwitch");
-        Highlight().IfPresent(highlight => highlight.enabled = false);
+        SetGlyphEnabled(false);
         RelatedMenu.IfPresent(menu => menu.SetActive(false));
     }
 
@@ -71,5 +71,5 @@ public abstract class VanillaTab : IGameOptionTab
 
     public List<GameOption> GetOptions() => options.AsList();
 
-    protected abstract UnityOptional<SpriteRenderer> Highlight();
+    protected abstract void SetGlyphEnabled(bool enabled);
 }

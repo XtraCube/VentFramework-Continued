@@ -52,7 +52,7 @@ internal static class ParameterHelper
         if (parameter == typeof(float))
             return reader.ReadSingle();
         if (parameter == typeof(int))
-            return (reader.ReadInt32());
+            return reader.ReadInt32();
         if (parameter == typeof(sbyte))
             return reader.ReadSByte();
         if (parameter == typeof(string))
@@ -65,8 +65,8 @@ internal static class ParameterHelper
             return reader.ReadUInt16();
         if (parameter == typeof(Vector2))
             return NetHelpers.ReadVector2(reader);
-        if (parameter == typeof(GameData))
-            return reader.ReadNetObject<GameData>();
+        if (parameter == typeof(NetworkedPlayerInfo))
+            return reader.ReadNetObject<NetworkedPlayerInfo>();
         if (parameter == typeof(GameManager))
             return reader.ReadNetObject<GameManager>();
         if (parameter == typeof(VoteBanSystem))
