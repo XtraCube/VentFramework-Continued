@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using VentLib.Logging.Default;
-using VentLib.Options.Game.Events;
+using VentLib.Options.Events;
 using VentLib.Options.Interfaces;
 using VentLib.Options.IO;
 using VentLib.Utilities;

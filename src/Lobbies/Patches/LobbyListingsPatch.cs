@@ -17,7 +17,8 @@ internal class LobbyListingsPatch
 
     internal static void Prefix(FindAGameManager __instance)
     {
-        LobbyChecker.GETModdedLobbies();
+        // seems to be down, so we'll just not call this...
+        // LobbyChecker.GETModdedLobbies();
     }
     
     internal static void Postfix(FindAGameManager __instance, [HarmonyArgument(0)] InnerNetClient.TotalGameData totalGames, [HarmonyArgument(1)] Il2CppSystem.Collections.Generic.List<GameListing> availableGames)

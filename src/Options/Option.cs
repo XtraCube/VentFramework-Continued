@@ -6,6 +6,7 @@ using System.Reflection;
 using Hazel;
 using VentLib.Logging;
 using VentLib.Networking.Interfaces;
+using VentLib.Options.Enum;
 using VentLib.Options.Events;
 using VentLib.Options.Interfaces;
 using VentLib.Options.IO;
@@ -20,6 +21,7 @@ public class Option: IRpcSendable<Option>
     internal string name = null!;
     internal string? Key;
     public Optional<string> Description = Optional<string>.Null();
+    public OptionType OptionType = OptionType.Undefined;
     public IOSettings IOSettings { get; set; } = new();
     public Dictionary<string, object> Attributes = new();
 
@@ -44,6 +46,7 @@ public class Option: IRpcSendable<Option>
     internal readonly List<Action<IOptionEvent>> EventHandlers = new();
 
     public string Name() => name;
+    public bool Setup = false;
 
     public string Qualifier() => Parent.Map(p => p.Qualifier() + ".").OrElse("") + (Key ?? Name());
     internal int InternalLevel() => Parent.Exists() ? Parent.Get().InternalLevel() + 1 : 0;
@@ -75,7 +78,7 @@ public class Option: IRpcSendable<Option>
 
     public string GetValueText() => GetRawValue().GetText();
 
-    internal void SetValue(OptionValue value)
+    internal object SetValue(OptionValue value)
     {
         Index = Optional<int>.NonNull(Values.IndexOf(value));
         if (Index.Get() == -1) Index = Optional<int>.NonNull(DefaultIndex);
@@ -85,9 +88,10 @@ public class Option: IRpcSendable<Option>
         
         OptionValueEvent optionValueEvent = new(this, oldValue, value.Value);
         EventHandlers.ForEach(eh => eh(optionValueEvent));
+        return value.Value;
     }
 
-    public void SetValue(int index, bool triggerEvent = true)
+    public int SetValue(int index, bool triggerEvent = true)
     {
         Index = Optional<int>.NonNull(EnforceIndexConstraint(index));
         Optional<object> oldValue = Value.Map(v => v.Value);
@@ -96,6 +100,7 @@ public class Option: IRpcSendable<Option>
 
         OptionValueEvent optionValueEvent = new(this, oldValue, Value.Get().Value);
         if (triggerEvent) EventHandlers.ForEach(eh => eh(optionValueEvent));
+        return index;
     }
 
     public void SetHardValue(object value) => SetValue(IOSettings.OptionValueLoader.LoadValue(Values, value, IOSettings));
