@@ -12,7 +12,7 @@ public class RoleOption: GameOption
     internal Optional<RoleOptionIntializer.RoleOptionIntialized> SettingsHolder = new();
     internal UnityOptional<RoleOptionSetting> Behaviour = new();
 
-    internal Func<Sprite>? roleImageSupplier;
+    internal Action<RoleOptionIntializer.RoleOptionIntialized>? roleInitializerSetup;
     internal FloatOption PercentageOption = null!;
     internal FloatOption MaximumOption = null!;
 

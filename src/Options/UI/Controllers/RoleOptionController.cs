@@ -193,7 +193,7 @@ public static class RoleOptionController
             RoleOptionIntializer.RoleOptionIntialized settingsHolder = RoleOptionIntializer.Intitialize();
             roleOption.SettingsHolder = Optional<RoleOptionIntializer.RoleOptionIntialized>.NonNull(settingsHolder);
             settingsHolder.RoleDesc.text = option.Description.OrElseGet(() => "Please use .Description on the Option Builder to set the text here.");
-            if (roleOption.roleImageSupplier != null) settingsHolder.RoleImage.sprite = roleOption.roleImageSupplier();
+            if (roleOption.roleInitializerSetup != null) roleOption.roleInitializerSetup(settingsHolder);
             settingsHolder.MainObject.transform.parent = roleOption.Tab!.OptionParent();
             settingsHolder.MainObject.transform.localScale = Vector3.one;
             settingsHolder.MainObject.name = "ModdedSettingsHolder";

@@ -115,27 +115,25 @@ public class GameOptionBuilder : IOptionBuilder<GameOptionBuilder>
         return this;
     }
 
-    /// <summary>
-    /// Replaces the default Phantom role image with your own custom Image.
-    /// </summary>
-    /// <param name="roleImageSupplier">Function to return the Role Image Sprite.</param>
-    /// <returns></returns>
-    public GameOptionBuilder RoleImage(Func<Sprite> roleImageSupplier)
-    {
-        if (Option.OptionType != Enum.OptionType.Role) throw new NotSupportedException($"{Option.OptionType} is not supported to use RoleImage(Func<Sprite> roleImageSupplier). It must be a RoleOption.");
-        (Option as RoleOption)!.roleImageSupplier = roleImageSupplier;
-        return this;
-    }
 
     /// <summary>
     /// Classifies this option as a Role Option. Do not bother setting this if it is not Level 1 of an IGameOptionTab.
     /// </summary>
+    /// <param name="roleChanceConsumer">The consumer that passes the new role percentage.</param>
+    /// <param name="roleInitializerSetup">The function to setup the RoleInitalizer. You can edit the option in any way you like with this.</param>
+    /// <param name="start">The start percentage number for this RoleOption.</param>
+    /// <param name="stop">The stop percentage number for this RoleOption.</param>
+    /// <param name="step">The step for the percentage for this RoleOption.</param>
+    /// <param name="defaultIndex">The default index for the Percentage of this Role Option.</param>
+    /// <param name="suffix">The text that appears after the number.</param>
     /// <returns></returns>
-    public GameOptionBuilder SetAsRoleOption(Action<int> roleChanceConsumer, int start, int stop, int step = 1, int defaultIndex = 0, string suffix = "")
+    public GameOptionBuilder SetAsRoleOption(Action<int> roleChanceConsumer, Action<RoleOptionIntializer.RoleOptionIntialized> roleInitializerSetup, 
+        int start, int stop, int step = 1, int defaultIndex = 0, string suffix = "")
     {
         if (!Option.OptionType.CanOverride()) return this;
         this.ClearValues();
         Option = RoleOption.From(Option);
+        (Option as RoleOption)!.roleInitializerSetup = roleInitializerSetup;
         Option.OptionType = Enum.OptionType.Role;
         this.Value(0);
         this.SubOption(sub => sub.Name("Percentage").Key("Percentage").AddIntRange(start, stop, step, defaultIndex, suffix).BindInt(roleChanceConsumer).Build());

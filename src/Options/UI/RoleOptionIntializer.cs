@@ -6,7 +6,7 @@ using VentLib.Utilities.Optionals;
 
 namespace VentLib.Options.UI;
 
-class RoleOptionIntializer
+public class RoleOptionIntializer
 {
     public static UnityOptional<GameObject> RoleTemplate = UnityOptional<GameObject>.Null();
     public static RoleOptionIntialized Intitialize()
@@ -23,7 +23,7 @@ class RoleOptionIntializer
             MainObject = templateClone
         };
     }
-    internal class RoleOptionIntialized
+    public class RoleOptionIntialized
     {
         public SpriteRenderer Background { get; internal init; } = null!;
         public SpriteRenderer RoleImage { get; internal init; } = null!;
