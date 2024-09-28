@@ -45,8 +45,8 @@ public class Optional<T>
         return optional == null ? new Optional<T>() : new Optional<T>(optional);
     }
 
-    public Optional<T> CoalesceEmpty(Func<Optional<T>> mapFunc) => Exists() ? this : Of(mapFunc().Item ?? default);
-    
+    public Optional<T> CoalesceEmpty(Func<Optional<T>> mapFunc) => Exists() ? this : Of(mapFunc().Item);
+
     public virtual bool Exists() => HasValue;
 
     public Optional<TR> Map<TR>(Func<T, TR> mapFunc) => new(Exists() ? mapFunc(Item!) : default) { HasValue = HasValue };
@@ -54,18 +54,18 @@ public class Optional<T>
     public Optional<TR> FlatMap<TR>(Func<T, Optional<TR>> mapFunc) => Exists() ? Optional<TR>.Of(mapFunc(Item!).Item ?? default) : Optional<TR>.Null();
 
     public TR Transform<TR>(Func<T, TR> exists, Func<TR> otherwise) => Exists() ? exists(Item!) : otherwise();
-    
+
     public void Handle(Action<T> consumer, Action otherwise)
     {
         if (Exists()) consumer(Item!);
         else otherwise();
     }
-    
+
     public void IfPresent(Action<T> consumer)
     {
         if (Exists()) consumer(Item!);
     }
-    
+
     public void IfNotPresent(Action action)
     {
         if (!Exists()) action();

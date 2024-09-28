@@ -38,8 +38,12 @@ public class SettingsRenderer: IGameOptionRenderer
         } else {
             Behaviour.transform.FindChild("Toggle").localPosition += new Vector3(1.3f, 0f, 0f);
         }
-        Behaviour.transform.FindChild("Title Text").transform.localPosition -= new Vector3(0.15f, 0f, 0f);
         Behaviour.transform.Find("LabelBackground").localPosition += new Vector3(1.75f + (0.4f * (option.Level - 1)), option.Level == 1 ? 0.005f : 0, 0f);
+        var titleText = Behaviour.FindChild<TextMeshPro>("Title Text");
+        titleText.transform.localPosition -= new Vector3(0.15f, 0f, 0f);
+        titleText.enableAutoSizing = true;
+        titleText.fontSizeMin = 1.3f;
+        titleText.fontSizeMax = 2.5f;
     }
 
     
