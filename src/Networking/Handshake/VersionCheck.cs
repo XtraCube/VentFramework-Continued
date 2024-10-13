@@ -25,7 +25,7 @@ public class VersionCheck
     {
         PlayerControl? lastSender = Vents.GetLastSender((uint)VentCall.VersionCheck);
         if (lastSender == null) return;
-        log.Info($"Received Version: \"{version.ToSimpleName()}\" from Player {lastSender.Data?.PlayerName}", "VentLib");
+        log.Info($"Received Version: \"{version.ToSimpleName()}\" from Player {lastSender.Data?.PlayerName}");
         VersionControl vc = VersionControl.Instance;
 
         if (lastSender != null)
