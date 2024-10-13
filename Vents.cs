@@ -45,10 +45,7 @@ public partial class Vents : BasePlugin
         NoDepLogger.High("Updated Unity Log UI.");
     }
 
-    public override void Load()
-    {
-        Initialize();
-    }
+    public override void Load() => Initialize();
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static ModRPC? FindRPC(uint callId, MethodInfo? targetMethod = null)
@@ -125,6 +122,10 @@ public partial class Vents : BasePlugin
     {
         if (_initialized) return;
         MainThreadAnchor.IsMainThread();
+
+        NoDepLogger.High("Current Date & Time:");
+        NoDepLogger.High($"UtcNow: {DateTime.UtcNow.ToString("G")}");
+        NoDepLogger.High($"LocalNow: {DateTime.Now.ToString("G")}");
 
         NoDepLogger.High($"Initializing VentFramework {Assembly.GetExecutingAssembly().GetName().Version!.ToString(4)}");
 
