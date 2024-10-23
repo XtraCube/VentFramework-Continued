@@ -191,6 +191,7 @@ public static class RoleOptionController
             // move role setting code here too when I get the chance.
             RoleOption roleOption = (option as RoleOption)!;
             RoleOptionIntializer.RoleOptionIntialized settingsHolder = RoleOptionIntializer.Intitialize();
+            settingsHolder.RoleSetting = roleOption.Behaviour.Get();
             roleOption.SettingsHolder = Optional<RoleOptionIntializer.RoleOptionIntialized>.NonNull(settingsHolder);
             settingsHolder.RoleDesc.text = option.Description.OrElseGet(() => "Please use .Description on the Option Builder to set the text here.");
             settingsHolder.MainObject.transform.parent = roleOption.Tab!.OptionParent();

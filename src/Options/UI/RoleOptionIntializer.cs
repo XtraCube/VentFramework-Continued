@@ -20,11 +20,12 @@ public class RoleOptionIntializer
             RoleHeader = templateClone.transform.Find("RoleHeader").gameObject,
             RoleImage = templateClone.FindChild<SpriteRenderer>("RoleImage"),
             RoleDesc = templateClone.FindChild<TextMeshPro>("RoleDesc"),
-            MainObject = templateClone
+            MainObject = templateClone,
         };
     }
     public class RoleOptionIntialized
     {
+        public RoleOptionSetting RoleSetting { get; internal set; } = null!;
         public SpriteRenderer Background { get; internal init; } = null!;
         public SpriteRenderer RoleImage { get; internal init; } = null!;
         public GameObject MainObject { get; internal init; } = null!;
