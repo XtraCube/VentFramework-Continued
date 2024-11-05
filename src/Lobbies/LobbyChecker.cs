@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,17 +18,20 @@ namespace VentLib.Lobbies;
 public class LobbyChecker
 {
     private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(LobbyChecker));
-    /*private static string LobbyEndpoint = "http://localhost:25565/lobbies";
-    private static string LobbyUpdateEndpoint = "http://localhost:25565/update-lobby";*/
-    private const string LobbyEndpoint = "http://18.219.112.36:8080/lobbies";
-    private const string LobbyUpdateEndpoint = "http://18.219.112.36:8080/update-lobby";
+    /*private static string LobbyEndpoint = "https://testing-lotus.eps.lol/lobbies";
+    private static string LobbyUpdateEndpoint = "https://testing-lotus.eps.lol/update-lobby";*/
+    private const string LobbyEndpoint = "https://lobbies.lotusau.top/lobbies";
+    private const string LobbyUpdateEndpoint = "https://lobbies.lotusau.top/update-lobby";
     private static readonly HttpClient Client = new();
     private static Dictionary<int, ModdedLobby> _moddedLobbies = new();
+
+    public static readonly List<string> lobbyPosted = new();
     private static readonly Regex SpecialCharacterRegex = new("[^A-Za-z-]*");
 
     // ReSharper disable once InconsistentNaming
     internal static void POSTModdedLobby(int gameId, string host)
     {
+        if (lobbyPosted.Contains(gameId.ToString())) return;
         HttpRequestMessage requestMessage = new();
         requestMessage.RequestUri = new Uri(LobbyEndpoint);
         requestMessage.Method = HttpMethod.Post;
@@ -36,9 +40,10 @@ public class LobbyChecker
         requestMessage.Headers.Add("game-code", GameCode.IntToGameNameV2(gameId));
         requestMessage.Headers.Add("version", version.ToSimpleName());
         requestMessage.Headers.Add("mod-name", Vents.AssemblyNames[Vents.RootAssemby]);
-        requestMessage.Headers.Add("host", SpecialCharacterRegex.Replace(host.Replace(" ", "-"), ""));
+        requestMessage.Headers.Add("game-host", SpecialCharacterRegex.Replace(host.Replace(" ", "-"), ""));
         requestMessage.Headers.Add("region", ServerManager.Instance.CurrentRegion.Name);
         Client.SendAsync(requestMessage);
+        lobbyPosted.Add(gameId.ToString()); // this might mess up if someone makes lobby while backend is offline
     }
 
     internal static void UpdateModdedLobby(int gameId, LobbyStatus lobbyStatus)
@@ -47,12 +52,14 @@ public class LobbyChecker
         requestMessage.RequestUri = new Uri(LobbyUpdateEndpoint);
         requestMessage.Method = HttpMethod.Post;
         requestMessage.Headers.Add("game-id", gameId.ToString());
-        requestMessage.Headers.Add("status", lobbyStatus.ServerString());
+        requestMessage.Headers.Add("status", lobbyStatus.ServerString()); // open | ingame | closed | unknown
         Client.SendAsync(requestMessage);
     }
 
     // ReSharper disable once InconsistentNaming
-    internal static void GETModdedLobbies()
+    
+    // this may be used in the future so i won't remove it, 
+    /*internal static void GETModdedLobbies() 
     {
         Task<HttpResponseMessage> response = Client.GetAsync(LobbyEndpoint);
         SyncTaskWaiter<HttpResponseMessage> waiter = new(response);
@@ -65,8 +72,8 @@ public class LobbyChecker
         else if (!response.Finished)
             Async.Schedule(() => WaitForResponse(response, times + 1), 1f);
         else HandleResponse(response.Response);
-    }
-
+    }}*/
+    
     internal static void HandleResponse(Task<HttpResponseMessage>? response)
     {
         if (response != null)
