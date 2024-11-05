@@ -18,8 +18,8 @@ namespace VentLib.Lobbies;
 public class LobbyChecker
 {
     private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(LobbyChecker));
-    /*private static string LobbyEndpoint = "https://testing-lotus.eps.lol/lobbies";
-    private static string LobbyUpdateEndpoint = "https://testing-lotus.eps.lol/update-lobby";*/
+    //private static string LobbyEndpoint = "https://testing-lotus.eps.lol/lobbies";
+    //private static string LobbyUpdateEndpoint = "https://testing-lotus.eps.lol/update-lobby";
     private const string LobbyEndpoint = "https://lobbies.lotusau.top/lobbies";
     private const string LobbyUpdateEndpoint = "https://lobbies.lotusau.top/update-lobby";
     private static readonly HttpClient Client = new();

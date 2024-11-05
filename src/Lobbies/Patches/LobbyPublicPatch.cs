@@ -14,7 +14,7 @@ public class LobbyPublicPatch
     private static DateTime? _lastUpdate;
     public static void Prefix(GameStartManager __instance)
     {
-        if (_lastUpdate != null && DateTime.Now.Subtract(_lastUpdate.Value).TotalSeconds < 0.5f) return;
+        if (_lastUpdate != null && DateTime.Now.Subtract(_lastUpdate.Value).TotalSeconds < 30.5f) return;
         _lastUpdate = DateTime.Now;
         if (!AmongUsClient.Instance.AmHost) return;
         log.Info($"Lobby Created: {AmongUsClient.Instance.GameId}", "ModdedLobbyCheck");
