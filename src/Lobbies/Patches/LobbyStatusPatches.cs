@@ -24,13 +24,11 @@ internal class LobbyStatusPatches
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Closed}", "LobbyStatus");
         LobbyChecker.UpdateModdedLobby(__instance.GameId, LobbyStatus.Closed);
-        LobbyChecker.lobbyPosted.Clear();
     }
     
     [QuickPostfix(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
     private static void UpdateStatusStart(LobbyBehaviour __instance)
     {   
-        if (!LobbyChecker.lobbyPosted.Contains(AmongUsClient.Instance.GameId.ToString())) return;
         if (!AmongUsClient.Instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Open}", "LobbyStatus");

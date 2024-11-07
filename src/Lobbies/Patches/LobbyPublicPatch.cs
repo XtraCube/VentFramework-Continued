@@ -1,5 +1,6 @@
 using System;
 using AmongUs.Data;
+using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
 using VentLib.Logging;
 using VentLib.Networking;
@@ -19,9 +20,8 @@ public class LobbyPublicPatch
         if (!AmongUsClient.Instance.AmHost) return;
         log.Info($"Lobby Created: {AmongUsClient.Instance.GameId}", "ModdedLobbyCheck");
         if (!NetworkRules.AllowRoomDiscovery) return;
-        if (LobbyChecker.lobbyPosted.Contains(AmongUsClient.Instance.GameId.ToString())) return;
         log.Info("Posting Room to Public", "RoomDiscovery");
-        LobbyChecker.POSTModdedLobby(AmongUsClient.Instance.GameId, DataManager.Player.customization.name);
+        __instance.StartCoroutine(LobbyChecker.POSTModdedLobby(AmongUsClient.Instance.GameId, DataManager.Player.customization.name));
     }
 
     [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
