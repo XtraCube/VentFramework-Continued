@@ -28,7 +28,7 @@ internal class LobbyStatusPatches
     
     [QuickPostfix(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
     private static void UpdateStatusStart(LobbyBehaviour __instance)
-    {
+    {   
         if (!AmongUsClient.Instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Open}", "LobbyStatus");

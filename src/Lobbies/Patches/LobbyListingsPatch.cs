@@ -34,7 +34,7 @@ internal class LobbyListingsPatch
                 .First(b => b.NameText.text == game.HostName);
             ModdedGames.Add((game.GameId, button));
         });
-        LobbyChecker.HandleResponse(null);
+        //LobbyChecker.HandleResponse(null);
     }
 }
 
