@@ -14,7 +14,7 @@ internal class LobbyStatusPatches
         if (!__instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.InGame}", "LobbyStatus");
-        LobbyChecker.UpdateModdedLobby(__instance.GameId, LobbyStatus.InGame);
+        LobbyChecker.UpdateModdedLobby(__instance.GameId, PlayerControl.AllPlayerControls.Count, LobbyStatus.InGame);
     }
     
     [QuickPrefix(typeof(InnerNetClient), nameof(InnerNetClient.DisconnectInternal))]
@@ -23,7 +23,7 @@ internal class LobbyStatusPatches
         if (reason is DisconnectReasons.NewConnection || !__instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Closed}", "LobbyStatus");
-        LobbyChecker.UpdateModdedLobby(__instance.GameId, LobbyStatus.Closed);
+        LobbyChecker.UpdateModdedLobby(__instance.GameId, PlayerControl.AllPlayerControls.Count, LobbyStatus.Closed);
     }
     
     [QuickPostfix(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
@@ -32,6 +32,6 @@ internal class LobbyStatusPatches
         if (!AmongUsClient.Instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Open}", "LobbyStatus");
-        LobbyChecker.UpdateModdedLobby(AmongUsClient.Instance.GameId, LobbyStatus.Open);
+        LobbyChecker.UpdateModdedLobby(AmongUsClient.Instance.GameId, PlayerControl.AllPlayerControls.Count, LobbyStatus.Open);
     }
 }

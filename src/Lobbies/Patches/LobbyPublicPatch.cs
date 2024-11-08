@@ -20,7 +20,7 @@ public class LobbyPublicPatch
         log.Info($"Lobby Created: {AmongUsClient.Instance.GameId}", "ModdedLobbyCheck");
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info("Posting Room to Public", "RoomDiscovery");
-        Async.Execute(LobbyChecker.POSTModdedLobby(AmongUsClient.Instance.GameId, DataManager.Player.customization.name));
+        Async.Execute(LobbyChecker.POSTModdedLobby(AmongUsClient.Instance.GameId, DataManager.Player.customization.name, PlayerControl.AllPlayerControls.Count));
     }
 
     [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]

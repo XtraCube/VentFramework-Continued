@@ -28,7 +28,7 @@ public class LobbyChecker
     private static readonly Regex SpecialCharacterRegex = new("[^A-Za-z-]*");
 
     // ReSharper disable once InconsistentNaming
-    internal static IEnumerator POSTModdedLobby(int gameId, string host) {
+    internal static IEnumerator POSTModdedLobby(int gameId, string host, int playerCount) {
         UnityWebRequest PostLobby = UnityWebRequest.Post(LobbyEndpoint, "");
         Version.Version version = VersionControl.Instance.Version ?? new NoVersion();
         PostLobby.SetRequestHeader("game-id", gameId.ToString());
@@ -37,6 +37,8 @@ public class LobbyChecker
         PostLobby.SetRequestHeader("mod-name", Vents.AssemblyNames[Vents.RootAssemby]);
         PostLobby.SetRequestHeader("game-host", SpecialCharacterRegex.Replace(host.Replace(" ", "-"), ""));
         PostLobby.SetRequestHeader("region", ServerManager.Instance.CurrentRegion.Name);
+        PostLobby.SetRequestHeader("player-count", playerCount.ToString());
+        PostLobby.SetRequestHeader("max-players", GameManager.Instance.LogicOptions.MaxPlayers.ToString());
 
         yield return PostLobby.SendWebRequest();
 
@@ -46,13 +48,14 @@ public class LobbyChecker
         yield return null;
     }
 
-    internal static void UpdateModdedLobby(int gameId, LobbyStatus lobbyStatus)
+    internal static void UpdateModdedLobby(int gameId, int playerCount, LobbyStatus lobbyStatus)
     {
         HttpRequestMessage requestMessage = new();
         requestMessage.RequestUri = new Uri(LobbyUpdateEndpoint);
         requestMessage.Method = HttpMethod.Post;
         requestMessage.Headers.Add("game-id", gameId.ToString());
         requestMessage.Headers.Add("status", lobbyStatus.ServerString());
+        requestMessage.Headers.Add("player-count", playerCount.ToString());
         Client.SendAsync(requestMessage);
     }
 
