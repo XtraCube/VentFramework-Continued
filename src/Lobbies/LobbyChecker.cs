@@ -17,11 +17,12 @@ namespace VentLib.Lobbies;
 
 public class LobbyChecker
 {
+    private static bool IsDebug = false;
     private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(LobbyChecker));
-    //private static string LobbyEndpoint = "https://testing-lotus.eps.lol/lobbies";
-    //private static string LobbyUpdateEndpoint = "https://testing-lotus.eps.lol/update-lobby";
-    private const string LobbyEndpoint = "https://lobbies.lotusau.top/lobbies";
-    private const string LobbyUpdateEndpoint = "https://lobbies.lotusau.top/update-lobby";
+
+    private static string LobbyEndpoint => IsDebug ? "https://testing-lotus.eps.lol/lobbies" : "https://lobbies.lotusau.top/lobbies";
+    private static string LobbyUpdateEndpoint => IsDebug ? "https://testing-lotus.eps.lol/update-lobby" : "https://lobbies.lotusau.top/update-lobby";
+
     private static readonly HttpClient Client = new();
     private static Dictionary<int, ModdedLobby> _moddedLobbies = new();
 
@@ -58,6 +59,7 @@ public class LobbyChecker
         requestMessage.Headers.Add("player-count", playerCount.ToString());
         Client.SendAsync(requestMessage);
     }
+    internal static void GETModdedLobbies()  {}
 
     // ReSharper disable once InconsistentNaming
     

@@ -1,3 +1,4 @@
+using System.Linq;
 using InnerNet;
 using VentLib.Logging;
 using VentLib.Networking;
@@ -14,7 +15,7 @@ internal class LobbyStatusPatches
         if (!__instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.InGame}", "LobbyStatus");
-        LobbyChecker.UpdateModdedLobby(__instance.GameId, PlayerControl.AllPlayerControls.Count, LobbyStatus.InGame);
+        LobbyChecker.UpdateModdedLobby(__instance.GameId, PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count(), LobbyStatus.InGame);
     }
     
     [QuickPrefix(typeof(InnerNetClient), nameof(InnerNetClient.DisconnectInternal))]
@@ -23,7 +24,7 @@ internal class LobbyStatusPatches
         if (reason is DisconnectReasons.NewConnection || !__instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Closed}", "LobbyStatus");
-        LobbyChecker.UpdateModdedLobby(__instance.GameId, PlayerControl.AllPlayerControls.Count, LobbyStatus.Closed);
+        LobbyChecker.UpdateModdedLobby(__instance.GameId, PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count(), LobbyStatus.Closed);
     }
     
     [QuickPostfix(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
@@ -32,6 +33,28 @@ internal class LobbyStatusPatches
         if (!AmongUsClient.Instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info($"Updating Lobby Status: {LobbyStatus.Open}", "LobbyStatus");
-        LobbyChecker.UpdateModdedLobby(AmongUsClient.Instance.GameId, PlayerControl.AllPlayerControls.Count, LobbyStatus.Open);
+        LobbyChecker.UpdateModdedLobby(AmongUsClient.Instance.GameId, PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count(), LobbyStatus.Open);
+    }
+    
+    [QuickPrefix(typeof(PlayerPhysics), nameof(PlayerPhysics.CoSpawnPlayer))]
+    private static void UpdatePlayersOnJoin(PlayerPhysics __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!NetworkRules.AllowRoomDiscovery) return;
+        LobbyStatus curStatus = LobbyBehaviour.Instance == null ? LobbyStatus.InGame : LobbyStatus.Open;
+        log.Info($"Updating number of players {curStatus}.", "LobbyStatus");
+        
+        LobbyChecker.UpdateModdedLobby(AmongUsClient.Instance.GameId, PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count(), curStatus);
+    }
+
+    [QuickPostfix(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
+    private static void UpdatePlayersOnLeave(AmongUsClient __instance, ClientData data)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!NetworkRules.AllowRoomDiscovery) return;
+        LobbyStatus curStatus = LobbyBehaviour.Instance == null ? LobbyStatus.InGame : LobbyStatus.Open;
+        log.Info($"Updating number of players {curStatus}.", "LobbyStatus");
+        
+        LobbyChecker.UpdateModdedLobby(AmongUsClient.Instance.GameId, PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count(), curStatus);
     }
 }

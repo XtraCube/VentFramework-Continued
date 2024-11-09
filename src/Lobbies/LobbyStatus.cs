@@ -6,8 +6,9 @@ public enum LobbyStatus
 {
     Open,
     InGame,
-    Unknown,
-    Closed
+    Closed,
+    
+    Unknown
 }
 
 public static class LobbyStatusMethods

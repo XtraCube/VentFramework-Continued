@@ -51,7 +51,7 @@ public class NetworkRules
 
         _roomDiscoveryOption = new OptionBuilder()
             .Key("Allow Room Discovery")
-            .Values(0, true, false)
+            .Values(1, true, false)
             .BindBool(_ => _roomDiscoveryOption?.Manager?.DelaySave())
             .BuildAndRegister(networkManager);
 
