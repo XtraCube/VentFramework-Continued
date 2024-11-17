@@ -21,7 +21,7 @@ public class LobbyPublicPatch
         log.Info($"Lobby Created: {AmongUsClient.Instance.GameId}", "ModdedLobbyCheck");
         if (!NetworkRules.AllowRoomDiscovery) return;
         log.Info("Posting Room to Public", "RoomDiscovery");
-        Async.Execute(LobbyChecker.POSTModdedLobby(AmongUsClient.Instance.GameId, 
+        Async.Execute(LobbyChecker.PostLobbyToEndpoints(AmongUsClient.Instance.GameId, 
             DataManager.Player.customization.name, 
             PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count()));
     }

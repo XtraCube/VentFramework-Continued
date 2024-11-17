@@ -9,6 +9,7 @@ using InnerNet;
 using UnityEngine.Networking;
 using VentLib.Lobbies.Patches;
 using VentLib.Logging;
+using VentLib.Utilities.Extensions;
 using VentLib.Version;
 using VentLib.Version.BuiltIn;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -17,48 +18,85 @@ namespace VentLib.Lobbies;
 
 public class LobbyChecker
 {
-    private static bool IsDebug = false;
     private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(LobbyChecker));
 
-    private static string LobbyEndpoint => IsDebug ? "https://testing-lotus.eps.lol/lobbies" : "https://lobbies.lotusau.top/lobbies";
-    private static string LobbyUpdateEndpoint => IsDebug ? "https://testing-lotus.eps.lol/update-lobby" : "https://lobbies.lotusau.top/update-lobby";
+    private static List<ILobbyServerInfo> LobbyServers = new() {
+        new DefaultServerInfo()
+    };
 
     private static readonly HttpClient Client = new();
     private static Dictionary<int, ModdedLobby> _moddedLobbies = new();
 
     private static readonly Regex SpecialCharacterRegex = new("[^A-Za-z-]*");
 
+    public static void AddEndpoint(ILobbyServerInfo serverInfo, bool replaceAll = false)
+    {
+        if (serverInfo == null) return;
+        if (replaceAll) LobbyServers.Clear();
+        LobbyServers.Add(serverInfo);
+    }
+
     // ReSharper disable once InconsistentNaming
-    internal static IEnumerator POSTModdedLobby(int gameId, string host, int playerCount) {
-        UnityWebRequest PostLobby = UnityWebRequest.Post(LobbyEndpoint, "");
-        Version.Version version = VersionControl.Instance.Version ?? new NoVersion();
-        PostLobby.SetRequestHeader("game-id", gameId.ToString());
-        PostLobby.SetRequestHeader("game-code", GameCode.IntToGameNameV2(gameId));
-        PostLobby.SetRequestHeader("version", version.ToSimpleName());
-        PostLobby.SetRequestHeader("mod-name", Vents.AssemblyNames[Vents.RootAssemby]);
-        PostLobby.SetRequestHeader("game-host", SpecialCharacterRegex.Replace(host.Replace(" ", "-"), ""));
-        PostLobby.SetRequestHeader("region", ServerManager.Instance.CurrentRegion.Name);
-        PostLobby.SetRequestHeader("player-count", playerCount.ToString());
-        PostLobby.SetRequestHeader("max-players", GameManager.Instance.LogicOptions.MaxPlayers.ToString());
+    internal static IEnumerator PostLobbyToEndpoints(int gameId, string host, int playerCount) 
+    {
+        List<UnityWebRequest> requests = new();
+        LobbyServers.ForEach(curInfo => {
+            if (curInfo.CreateEndpoint() == "") return;
+            UnityWebRequest PostLobby = UnityWebRequest.Post(curInfo.CreateEndpoint(), "");
+            Version.Version version = VersionControl.Instance.Version ?? new NoVersion();
+            PostLobby.SetRequestHeader("game-id", gameId.ToString());
+            PostLobby.SetRequestHeader("game-code", GameCode.IntToGameNameV2(gameId));
+            PostLobby.SetRequestHeader("version", version.ToSimpleName());
+            PostLobby.SetRequestHeader("mod-name", Vents.AssemblyNames[Vents.RootAssemby]);
+            PostLobby.SetRequestHeader("game-host", SpecialCharacterRegex.Replace(host.Replace(" ", "-"), ""));
+            PostLobby.SetRequestHeader("region", ServerManager.Instance.CurrentRegion.Name);
+            PostLobby.SetRequestHeader("player-count", playerCount.ToString());
+            PostLobby.SetRequestHeader("max-players", GameManager.Instance.LogicOptions.MaxPlayers.ToString());
+            PostLobby.SetRequestHeader("map", GameManager.Instance.LogicOptions.MapId.ToString());
+            curInfo.AddCustomHeaders(LobbyUpdateType.Creation).ForEach(kvp => PostLobby.SetRequestHeader(kvp.Key, kvp.Value));
 
-        yield return PostLobby.SendWebRequest();
+            requests.Add(PostLobby);
+        });
 
-        if (PostLobby.result != UnityWebRequest.Result.Success) {
-            log.Exception($"Error while posting lobby, returned {PostLobby.responseCode}", PostLobby.error);
-        }
+        IEnumerator<UnityWebRequest> enumerator = requests.GetEnumerator();
+        while (enumerator.MoveNext())
+            yield return enumerator.Current.SendWebRequest();
+            if (enumerator.Current.result != UnityWebRequest.Result.Success) {
+                log.Exception($"Error while posting lobby, returned {enumerator.Current.responseCode}", enumerator.Current.error);
+            }
+        enumerator.Dispose();
         yield return null;
     }
 
-    internal static void UpdateModdedLobby(int gameId, int playerCount, LobbyStatus lobbyStatus)
+    internal static void UpdateLobbyStatus(int gameId, int playerCount, LobbyStatus lobbyStatus)
     {
-        HttpRequestMessage requestMessage = new();
-        requestMessage.RequestUri = new Uri(LobbyUpdateEndpoint);
-        requestMessage.Method = HttpMethod.Post;
-        requestMessage.Headers.Add("game-id", gameId.ToString());
-        requestMessage.Headers.Add("status", lobbyStatus.ServerString());
-        requestMessage.Headers.Add("player-count", playerCount.ToString());
-        Client.SendAsync(requestMessage);
+        LobbyServers.ForEach(curInfo => {
+            if (curInfo.UpdatePlayerStatusEndpoint() == "") return;
+            HttpRequestMessage requestMessage = new();
+            requestMessage.RequestUri = new Uri(curInfo.UpdatePlayerStatusEndpoint());
+            requestMessage.Method = HttpMethod.Post;
+            requestMessage.Headers.Add("game-id", gameId.ToString());
+            requestMessage.Headers.Add("status", lobbyStatus.ServerString());
+            requestMessage.Headers.Add("player-count", playerCount.ToString());
+            curInfo.AddCustomHeaders(LobbyUpdateType.Player).ForEach(kvp => requestMessage.Headers.Add(kvp.Key, kvp.Value));
+            Client.SendAsync(requestMessage);
+        });
     }
+
+    internal static void UpdateLobbyMap(int gameId, byte mapId)
+    {
+        LobbyServers.ForEach(curInfo => {
+            if (curInfo.UpdateMapEndpoint() == "") return;
+            HttpRequestMessage requestMessage = new();
+            requestMessage.RequestUri = new Uri(curInfo.UpdateMapEndpoint());
+            requestMessage.Method = HttpMethod.Post;
+            requestMessage.Headers.Add("game-id", gameId.ToString());
+            requestMessage.Headers.Add("map", mapId.ToString());
+            curInfo.AddCustomHeaders(LobbyUpdateType.Map).ForEach(kvp => requestMessage.Headers.Add(kvp.Key, kvp.Value));
+            Client.SendAsync(requestMessage);  
+        });
+    }
+
     internal static void GETModdedLobbies()  {}
 
     // ReSharper disable once InconsistentNaming
@@ -102,5 +140,18 @@ public class LobbyChecker
             button.LanguageText.text = lobby.Mod;
             button.NameText.text = $"{lobby.Host}'s Lobby";
         });
+    }
+    private class DefaultServerInfo: ILobbyServerInfo
+    {
+        private static readonly Dictionary<string, string> Empty = new();
+
+        // Examples. these aren't currently implemented or even being listened for
+        // public string CreateEndpoint() => "https://api.lotusapi.top/lobbies/create";
+        // public string UpdatePlayerStatusEndpoint() => "https://api.lotusapi.top/lobbies/update";
+        // public string UpdateMapEndpoint() => "https://api.lotusapi.top/lobbies/update";
+        public string CreateEndpoint() => "";
+        public string UpdatePlayerStatusEndpoint() => "";
+        public string UpdateMapEndpoint() => "";
+        public Dictionary<string, string> AddCustomHeaders(LobbyUpdateType _) => Empty;
     }
 }
