@@ -100,7 +100,7 @@ public class TextOption: GameOption
     {
         TextOption textOption = new TextOption() {
             name = option.name,
-            Key = option.Key,
+            key = option.key,
             Description = option.Description,
             IOSettings = option.IOSettings,
             OptionType = OptionType.String,

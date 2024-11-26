@@ -19,7 +19,7 @@ public class Option: IRpcSendable<Option>
     private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(Option));
     // ReSharper disable once InconsistentNaming
     internal string name = null!;
-    internal string? Key;
+    internal string? key;
     public Optional<string> Description = Optional<string>.Null();
     public OptionType OptionType = OptionType.Undefined;
     public IOSettings IOSettings { get; set; } = new();
@@ -46,9 +46,10 @@ public class Option: IRpcSendable<Option>
     internal readonly List<Action<IOptionEvent>> EventHandlers = new();
 
     public string Name() => name;
+    public string Key() => key ?? Name();
     public bool Setup = false;
 
-    public string Qualifier() => Parent.Map(p => p.Qualifier() + ".").OrElse("") + (Key ?? Name());
+    public string Qualifier() => Parent.Map(p => p.Qualifier() + ".").OrElse("") + Key();
     internal int InternalLevel() => Parent.Exists() ? Parent.Get().InternalLevel() + 1 : 0;
     
 

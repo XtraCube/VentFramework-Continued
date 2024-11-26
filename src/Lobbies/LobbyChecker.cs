@@ -47,7 +47,7 @@ public class LobbyChecker
             PostLobby.SetRequestHeader("game-id", gameId.ToString());
             PostLobby.SetRequestHeader("game-code", GameCode.IntToGameNameV2(gameId));
             PostLobby.SetRequestHeader("version", version.ToSimpleName());
-            PostLobby.SetRequestHeader("mod-name", Vents.AssemblyNames[Vents.RootAssemby]);
+            PostLobby.SetRequestHeader("mod-name", version.ToString());
             PostLobby.SetRequestHeader("game-host", SpecialCharacterRegex.Replace(host.Replace(" ", "-"), ""));
             PostLobby.SetRequestHeader("region", ServerManager.Instance.CurrentRegion.Name);
             PostLobby.SetRequestHeader("player-count", playerCount.ToString());

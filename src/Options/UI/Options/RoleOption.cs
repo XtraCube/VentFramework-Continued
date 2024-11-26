@@ -134,7 +134,7 @@ public class RoleOption: GameOption
     {
         RoleOption roleOption = new RoleOption() {
             name = option.name,
-            Key = option.Key,
+            key = option.key,
             Description = option.Description,
             IOSettings = option.IOSettings,
             OptionType = OptionType.Role,

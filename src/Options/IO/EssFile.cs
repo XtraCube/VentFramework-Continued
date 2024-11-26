@@ -109,7 +109,7 @@ public class EssFile
                     }
                     else
                     {
-                        key = new EssKey(parent.Key ?? parent.Name()) { Description = parent.Description.OrElse(null!), FullQualifier = parent.Qualifier() };
+                        key = new EssKey(parent.Key()) { Description = parent.Description.OrElse(null!), FullQualifier = parent.Qualifier() };
                         value = new EssValue(ValueTypeProcessors.WriteToString(parent.GetValue()));
                     }
                     innerDictionary[key] = value;
@@ -133,7 +133,7 @@ public class EssFile
                 return;
             }
 
-            EssKey key = new(child.Key ?? child.Name()) { Description = child.Description.OrElse(null!), FullQualifier = child.Qualifier() };
+            EssKey key = new(child.Key()) { Description = child.Description.OrElse(null!), FullQualifier = child.Qualifier() };
             if (essValue.Child.TryGetValue(key, out EssValue childValue))
             {
                 WriteToCache(child, key, childValue);

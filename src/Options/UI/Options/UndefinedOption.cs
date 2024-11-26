@@ -62,7 +62,7 @@ public class UndefinedOption: GameOption
     {
         UndefinedOption undefinedOption = new UndefinedOption() {
             name = option.name,
-            Key = option.Key,
+            key = option.key,
             Description = option.Description,
             IOSettings = option.IOSettings,
             Values = option.Values,

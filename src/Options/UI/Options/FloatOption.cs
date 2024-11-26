@@ -101,7 +101,7 @@ public class FloatOption: GameOption
     {
         FloatOption floatOption = new FloatOption() {
             name = option.name,
-            Key = option.Key,
+            key = option.key,
             Description = option.Description,
             IOSettings = option.IOSettings,
             Values = option.Values,

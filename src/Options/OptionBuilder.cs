@@ -25,7 +25,7 @@ public class OptionBuilder : IOptionBuilder<OptionBuilder>
 
     public OptionBuilder Key(string key)
     {
-        Option.Key = key;
+        Option.key = key;
         return this;
     }
 
@@ -38,7 +38,7 @@ public class OptionBuilder : IOptionBuilder<OptionBuilder>
     public OptionBuilder LocaleName(string qualifier)
     {
         Option.name = Localizer.Get(Assembly.GetCallingAssembly()).Translate(qualifier);
-        Option.Key ??= qualifier;
+        Option.key ??= qualifier;
         return this;
     }
 

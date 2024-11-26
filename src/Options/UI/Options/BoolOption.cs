@@ -70,7 +70,7 @@ public class BoolOption: GameOption
     {
         BoolOption boolOption = new BoolOption() {
             name = option.name,
-            Key = option.Key,
+            key = option.key,
             Description = option.Description,
             IOSettings = option.IOSettings,
             OptionType = OptionType.Bool,

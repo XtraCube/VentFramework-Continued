@@ -1,12 +1,14 @@
-using System.Linq;
+using System;
 using InnerNet;
+using HarmonyLib;
+using System.Linq;
 using VentLib.Logging;
 using VentLib.Networking;
 using VentLib.Utilities.Harmony.Attributes;
+using VentLib.Utilities.Extensions;
 
 namespace VentLib.Lobbies.Patches;
-
-internal class LobbyStatusPatches
+public static class LobbyStatusPatches
 {
     private static readonly StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(LobbyStatusPatches));
     internal static int LastPlayerCount;
@@ -58,13 +60,20 @@ internal class LobbyStatusPatches
         LobbyChecker.UpdateLobbyStatus(AmongUsClient.Instance.GameId, PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && !p.Data.Disconnected).Count(), curStatus);
     }
 
-    [QuickPostfix(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.SetMap))]
-    private static void UpdateMap(CreateOptionsPicker __instance, int mapId)
+    internal static void UpdateMap(GameOptionsMapPicker __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
-        if (__instance.mode != SettingsMode.Host) return;
+        int mapId = __instance.GetInt();
         log.Info($"Updating map ID {mapId}.");
         LobbyChecker.UpdateLobbyMap(AmongUsClient.Instance.GameId, (byte)mapId);
     }
+}
+
+[HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.Initialize), typeof(int))]
+public static class MapPickerPatches
+{
+    public static void Postfix(GameOptionsMapPicker __instance, int maskLayer) => __instance.mapButtons.ToArray().ForEach(mb => {
+            mb.Button.OnClick.AddListener((Action)(() => LobbyStatusPatches.UpdateMap(__instance)));
+        });
 }

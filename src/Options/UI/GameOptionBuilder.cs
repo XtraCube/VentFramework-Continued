@@ -28,7 +28,7 @@ public class GameOptionBuilder : IOptionBuilder<GameOptionBuilder>
 
     public GameOptionBuilder Key(string key)
     {
-        Option.Key = key;
+        Option.key = key;
         return this;
     }
 
@@ -41,7 +41,7 @@ public class GameOptionBuilder : IOptionBuilder<GameOptionBuilder>
     public GameOptionBuilder LocaleName(string qualifier)
     {
         Option.name = Localizer.Get(Assembly.GetCallingAssembly()).Translate(qualifier, translationCreationOption: TranslationCreationOption.SaveIfNull);
-        Option.Key ??= qualifier;
+        Option.key ??= qualifier;
         return this;
     }
 
