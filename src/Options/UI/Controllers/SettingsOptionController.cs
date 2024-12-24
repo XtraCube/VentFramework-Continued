@@ -266,5 +266,7 @@ public static class SettingsOptionController
         }
         log.Debug($"Switching tab to {newTab?.buttonText ?? "No tab"}");
         _lastInitialized.Get().MenuDescriptionText.text = newTab?.areaDescription ?? "No description.";
+        var label = _lastInitialized.Get().GamePresetsButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        label.text = MainSettingsTab.buttonText;
     }
 }

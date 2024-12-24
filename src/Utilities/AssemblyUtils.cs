@@ -65,7 +65,8 @@ public static class AssemblyUtils
 
     internal static string GetAssemblyRefName(Assembly assembly)
     {
-        return assembly == Vents.RootAssemby ? "root" : Vents.AssemblyNames.GetValueOrDefault(assembly, assembly.GetName().Name!);
+        // return assembly == Vents.RootAssemby ? "root" : Vents.AssemblyNames.GetValueOrDefault(assembly, assembly.GetName().Name!);
+        return Vents.AssemblyNames.GetValueOrDefault(assembly, assembly.GetName().Name!);
     }
     
 }

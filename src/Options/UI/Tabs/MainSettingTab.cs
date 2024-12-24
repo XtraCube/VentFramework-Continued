@@ -9,8 +9,8 @@ namespace VentLib.Options.UI.Tabs;
 public class MainSettingTab
 {
     private List<GameOption> Options { get; }
-    public string buttonText;
-    public string areaDescription;
+    public string buttonText { get ;}
+    public string areaDescription { get; }
     public MainSettingTab(string buttonText, string areaDescription)
     {
         this.buttonText = buttonText;
@@ -28,11 +28,11 @@ public class MainSettingTab
 
     public virtual void ClearOptions() => Options.Clear();
 
-    public List<GameOption> PreRender() => Options.SelectMany(opt => opt.GetDisplayedMembers()).ToList();
+    public virtual List<GameOption> PreRender() => Options.SelectMany(opt => opt.GetDisplayedMembers()).ToList();
 
     public virtual float StartHeight() => 2.21f; // Vanilla AU starts at 0.713f. 2.21 is like the very top of the options.
     
-    public List<GameOption> GetOptions() => Options;
+    public virtual List<GameOption> GetOptions() => Options;
 
     public virtual void Activate()
     {

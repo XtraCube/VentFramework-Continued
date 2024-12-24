@@ -130,7 +130,7 @@ public partial class Vents : BasePlugin
         NoDepLogger.High($"Initializing VentFramework {Assembly.GetExecutingAssembly().GetName().Version!.ToString(4)}");
 
         var _ = Async.AUCWrapper;
-        RootAssemby = Assembly.GetCallingAssembly();
+        RootAssemby = Assembly.GetExecutingAssembly();
         IL2CPPChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly, assembly == RootAssemby);
         Register(Assembly.GetExecutingAssembly());
         Harmony.PatchAll(Assembly.GetExecutingAssembly());

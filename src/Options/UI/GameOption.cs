@@ -4,7 +4,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using VentLib.Options.Events;
+using VentLib.Options.Extensions;
 using VentLib.Options.Interfaces;
+using VentLib.Options.UI.Controllers;
 using VentLib.Utilities;
 using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Optionals;
@@ -36,6 +38,13 @@ public class GameOption : Option
     {
         if (!colorize || Color == Color.white) return base.Name();
         return Color.Colorize(base.Name());
+    }
+
+    public void Delete()
+    {
+        Tab = null;
+        if (SettingsOptionController.MainSettingsTab != null) SettingsOptionController.MainSettingsTab.RemoveOption(this);
+        if (this.BehaviourExists()) this.GetBehaviour().gameObject.Destroy();
     }
 
     internal List<GameOption> GetDisplayedMembers()

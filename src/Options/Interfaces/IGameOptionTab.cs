@@ -40,7 +40,7 @@ public interface IGameOptionTab
     /// Filters, or possibly renders options before being sent to the main renderer.
     /// Main renderer will then only render options returned by this function.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The options to render.</returns>
     List<GameOption> PreRender(int? targetLevel = null);
 
     Optional<Vector3> GetPosition();

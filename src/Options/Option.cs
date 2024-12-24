@@ -47,7 +47,6 @@ public class Option: IRpcSendable<Option>
 
     public string Name() => name;
     public string Key() => key ?? Name();
-    public bool Setup = false;
 
     public string Qualifier() => Parent.Map(p => p.Qualifier() + ".").OrElse("") + Key();
     internal int InternalLevel() => Parent.Exists() ? Parent.Get().InternalLevel() + 1 : 0;
