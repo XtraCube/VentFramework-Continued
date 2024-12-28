@@ -265,8 +265,8 @@ public static class SettingsOptionController
             return;
         }
         log.Debug($"Switching tab to {newTab?.buttonText ?? "No tab"}");
-        _lastInitialized.Get().MenuDescriptionText.text = newTab?.areaDescription ?? "No description.";
+        _lastInitialized.Get().MenuDescriptionText.text = newTab?.areaDescription ?? "Modify the custom settings to your liking.";
         var label = _lastInitialized.Get().GamePresetsButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        label.text = MainSettingsTab.buttonText;
+        label.text = newTab?.buttonText ?? "MOD SETTINGS";
     }
 }
