@@ -57,6 +57,7 @@ public class LobbyChecker
 
             requests.Add(PostLobby);
         });
+        LobbyStatusPatches.LastPlayerCount = playerCount;
 
         IEnumerator<UnityWebRequest> enumerator = requests.GetEnumerator();
         while (enumerator.MoveNext())
