@@ -9,6 +9,7 @@ using VentLib.Utilities.Optionals;
 namespace VentLib.Options.UI.Options;
 public class BoolOption: GameOption
 {
+    // use "Toggle" so we have a checkmark
     internal UnityOptional<ToggleOption> Behaviour = new();
 
     internal void HideMembers()
@@ -76,9 +77,9 @@ public class BoolOption: GameOption
             OptionType = OptionType.Bool,
             Values = option.Values,
             DefaultIndex = option.DefaultIndex,
-            ValueType = option.ValueType,
             Attributes = option.Attributes,
         };
+        if (option.valueType != null) boolOption.valueType = option.valueType;
         option.EventHandlers.ForEach(boolOption.RegisterEventHandler);
         option.Children.ForEach(boolOption.Children.Add);
         return boolOption;

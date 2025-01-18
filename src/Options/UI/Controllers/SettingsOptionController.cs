@@ -195,7 +195,7 @@ public static class SettingsOptionController
                 toggleBehavior.name = "ModdedSetting";
 			    toggleBehavior.SetClickMask(menu.ButtonClickMask);
 			    toggleBehavior.SetUpFromData(checkboxSettings, 20);
-                toggleBehavior.CheckMark.enabled = option.GetValueText() == true.ToString();
+                toggleBehavior.CheckMark.enabled = (bool)option.GetValue();
                 toggleBehavior.TitleText.text = option.Name();
                 toggleBehavior.OnValueChanged = new Action<OptionBehaviour>(_ => { });
                 boolOption.Behaviour = UnityOptional<ToggleOption>.NonNull(toggleBehavior);

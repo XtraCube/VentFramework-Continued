@@ -106,9 +106,9 @@ public class FloatOption: GameOption
             IOSettings = option.IOSettings,
             Values = option.Values,
             DefaultIndex = option.DefaultIndex,
-            ValueType = option.ValueType,
             Attributes = option.Attributes,
         };
+        if (option.valueType != null) floatOption.valueType = option.valueType;
         option.EventHandlers.ForEach(floatOption.RegisterEventHandler);
         option.Children.ForEach(floatOption.Children.Add);
         return floatOption;

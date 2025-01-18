@@ -106,9 +106,9 @@ public class TextOption: GameOption
             OptionType = OptionType.String,
             Values = option.Values,
             DefaultIndex = option.DefaultIndex,
-            ValueType = option.ValueType,
             Attributes = option.Attributes,
         };
+        if (option.valueType != null) textOption.valueType = option.valueType;
         option.EventHandlers.ForEach(textOption.RegisterEventHandler);
         option.Children.ForEach(textOption.Children.Add);
         return textOption;

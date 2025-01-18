@@ -33,7 +33,7 @@ public class Option: IRpcSendable<Option>
         get => valueType ??= Values.Count > 0 ? Values[0].Value.GetType() : typeof(string);
         set => valueType = value;
     }
-    private Type? valueType;
+    internal Type? valueType;
     
     internal List<OptionValue> Values = new();
 

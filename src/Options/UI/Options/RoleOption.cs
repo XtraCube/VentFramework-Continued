@@ -140,9 +140,9 @@ public class RoleOption: GameOption
             OptionType = OptionType.Role,
             Values = option.Values,
             DefaultIndex = option.DefaultIndex,
-            ValueType = option.ValueType,
             Attributes = option.Attributes,
         };
+        if (option.valueType != null) roleOption.valueType = option.valueType;
         option.EventHandlers.ForEach(roleOption.RegisterEventHandler);
         option.Children.ForEach(roleOption.Children.Add);
         return roleOption;

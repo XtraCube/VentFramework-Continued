@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using VentLib.Logging;
 using VentLib.Logging.Default;
 using VentLib.Options.Processors;
+using VentLib.Options.UI.Options;
 using VentLib.Utilities.Collections;
 using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Optionals;

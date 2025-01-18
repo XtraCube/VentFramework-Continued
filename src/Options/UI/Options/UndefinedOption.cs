@@ -67,9 +67,9 @@ public class UndefinedOption: GameOption
             IOSettings = option.IOSettings,
             Values = option.Values,
             DefaultIndex = option.DefaultIndex,
-            ValueType = option.ValueType,
             Attributes = option.Attributes,
         };
+        if (option.valueType != null) undefinedOption.valueType = option.valueType;
         option.EventHandlers.ForEach(undefinedOption.RegisterEventHandler);
         option.Children.ForEach(undefinedOption.Children.Add);
         return undefinedOption;
