@@ -68,10 +68,11 @@ public static class SearchBarController
 
         searchBar.textArea.characterLimit = SearchBarInfo.CharLimit();
 
-        searchBar.FindChild<TextMeshPro>("CharCounter (TMP)").gameObject.SetActive(false);
-        searchBar.FindChild<PassiveButton>("ChatSendButton").gameObject.SetActive(false);
+        searchBar.FindChild<TextMeshPro>("CharCounter (TMP)", true).gameObject.SetActive(false);
+        searchBar.FindChild<PassiveButton>("ChatSendButton", true).gameObject.SetActive(false);
 
-        searchBar.FindChild<SpriteRenderer>("Background").sprite = SearchBarInfo.SearchBarSprite();
+        searchBar.FindChild<SpriteRenderer>("Background", true).sprite = SearchBarInfo.SearchBarSprite();
+        searchBar.FindChild<SpriteRenderer>("Background", true).color = Color.white;
 
         if (!SearchBarInfo.HoverColor()) searchBar.textArea.Background = null;
 
