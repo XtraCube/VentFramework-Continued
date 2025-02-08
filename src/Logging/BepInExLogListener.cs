@@ -6,6 +6,7 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP.Logging;
 using VentLib.Logging.Accumulators;
 using VentLib.Logging.Default;
+using VentLib.Utilities;
 
 namespace VentLib.Logging;
 
@@ -20,7 +21,8 @@ internal sealed class BepInExLogListener: ILogListener
 
     public static void BindToUnity()
     {
-        ConsoleLogListener consoleLog = (ConsoleLogListener)BepInEx.Logging.Logger.Listeners.First(l => l.GetType() == typeof(ConsoleLogListener));
+        ILogListener? consoleLog = BepInEx.Logging.Logger.Listeners.FirstOrDefault(l => l.GetType() == typeof(ConsoleLogListener));
+        if (consoleLog == null) return; // Fix no console crash.
         BepInExLogListener interceptor = new(consoleLog.LogLevelFilter);
         BepInEx.Logging.Logger.Listeners.Remove(consoleLog);
         BepInEx.Logging.Logger.Listeners.Add(interceptor);
