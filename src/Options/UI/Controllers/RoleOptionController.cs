@@ -197,6 +197,7 @@ public static class RoleOptionController
             settingsHolder.MainObject.transform.parent = roleOption.Tab!.OptionParent();
             settingsHolder.MainObject.transform.localScale = Vector3.one;
             settingsHolder.MainObject.name = "ModdedSettingsHolder";
+            settingsHolder.MainObject.FindChildOrEmpty<CategoryHeaderMasked>("CategoryHeaderMasked").IfPresent(chm => chm.gameObject.Destroy());
             _renderer.PreRender(option, RenderOptions, menu);
             if (roleOption.roleInitializerSetup != null) roleOption.roleInitializerSetup(settingsHolder);
             return;
