@@ -52,7 +52,7 @@ public class HandleRpcPatch
             string message = reader.ReadString();
             PlayerControl? player = PlayerControl.AllPlayerControls.ToArray().FirstOrDefault(p => p.NetId == __instance.NetId);
             if (player == null) NoDepLogger.Debug($"{playerName} sent an AUM message saying: {message}. (we could not find the real player. so we are using their name in the rpc.)");
-            else NoDepLogger.Debug($"{player.Data.name} sent an AUM message saying: {message}.");
+            else NoDepLogger.Debug($"{player.name} sent an AUM message saying: {message}.");
             return false;
         }
 

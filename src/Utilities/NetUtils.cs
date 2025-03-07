@@ -16,7 +16,7 @@ public static class NetUtils
     {
         if (player == null) return -1;
         var client = player.GetClient();
-        return client?.Id ?? -1;
+        return client?.Id ?? player.OwnerId;
     }
     
     // ReSharper disable once CompareOfFloatsByEqualityOperator

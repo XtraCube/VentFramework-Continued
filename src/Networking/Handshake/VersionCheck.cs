@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using VentLib.Logging;
@@ -5,6 +6,8 @@ using VentLib.Networking.RPC;
 using VentLib.Networking.RPC.Attributes;
 using VentLib.Utilities;
 using VentLib.Networking.Handshake.Patches;
+using VentLib.Options;
+using VentLib.Utilities.Collections;
 using VentLib.Version;
 using VentLib.Version.BuiltIn;
 
@@ -28,15 +31,24 @@ public class VersionCheck
         log.Info($"Received Version: \"{version.ToSimpleName()}\" from Player {lastSender.Data?.PlayerName}");
         VersionControl vc = VersionControl.Instance;
 
-        if (lastSender != null)
-            PlayerJoinPatch.WaitSet.Remove(lastSender.GetClientId());
+        PlayerJoinPatch.WaitSet.Remove(lastSender.GetClientId());
         
         HandshakeResult action = vc.HandshakeFilter!.Invoke(version);
         vc.VersionHandles
             .Where(h => h.Item1.HasFlag(action is HandshakeResult.PassDoNothing ? ReceiveExecutionFlag.OnSuccessfulHandshake : ReceiveExecutionFlag.OnFailedHandshake))
-            .Do(h => h.Item2.Invoke(version, lastSender!));
+            .Do(h => h.Item2.Invoke(version, lastSender));
         
         HandleAction(action, lastSender);
+
+        if (action is HandshakeResult.PassDoNothing)
+        {
+            List<VentRPC.NetworkedOption> allOptions = OptionManager.AllOptions.Values
+                .Where(o => o.Manager?.Flags().HasFlag(OptionManagerFlags.SyncOverRpc) ?? false)
+                .Select(o => new VentRPC.NetworkedOption(o, o.Index.OrElse(0)))
+                .ToList();
+            
+            Vents.FindRPC((uint)VentCall.SyncOptions)!.Send([lastSender.GetClientId()], new BatchList<VentRPC.NetworkedOption>(allOptions));
+        }
     }
 
     private static void HandleAction(HandshakeResult action, PlayerControl? player)

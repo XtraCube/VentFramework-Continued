@@ -25,7 +25,7 @@ internal static class PlayerJoinPatch
         WaitSet.Add(client.Id);
         Async.Schedule(() =>
         {
-            rpc.Send(new[] { client.Id });
+            rpc.Send([client.Id]);
             if (vc.ResponseTimer <= 0) return;
             Async.Schedule(() =>
             {
