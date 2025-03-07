@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using VentLib.Utilities.Optionals;
@@ -100,6 +101,8 @@ public static class UnityObjectExtensions
         }
         else return obj.GetComponentsInChildren<T>(includeInactive).First(c => c.name == name);
     }
+
+    public static List<GameObject> GetChildren(this GameObject obj, bool recursive = false) => obj.transform.GetChildren(recursive).Select(t => t.gameObject).ToList();
     
     public static UnityOptional<T> FindChildOrEmpty<T>(this MonoBehaviour obj, string name, bool includeInactive = false) where T: Object
     {
