@@ -9,7 +9,7 @@ internal static class AssetLoader
     internal static Sprite LoadSprite(string path, float pixelsPerUnit = 100f, bool linear = false, int mipMapLevel = 0)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        string assemblyName = "VentLib.";
+        string assemblyName = "VentLib.assets.";
 
         if (!path.StartsWith(assemblyName)) path = assemblyName + path;
         using (var stream = assembly.GetManifestResourceStream(path))

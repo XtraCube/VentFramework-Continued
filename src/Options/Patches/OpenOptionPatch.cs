@@ -23,6 +23,7 @@ internal static class OpenGameSettingsPatch
     {
         SettingsOptionController.Start(__instance);
         SearchBarController.HandleOpen(__instance);
+        PresetManager.EditSettingsMenu(__instance);
     }
 }
 
@@ -37,7 +38,7 @@ public static class OpenRoleSettingsPatch
             if (RoleOptionIntializer.RoleTemplate.Exists()) return false;
             RoleOptionIntializer.RoleTemplate = UnityOptional<GameObject>.Of(__instance.transform.Find("Scroller/SliderInner/AdvancedTab").gameObject);
             if (RoleOptionIntializer.RoleTemplate.Exists()) {
-                RoleOptionIntializer.RoleTemplate.Get().transform.Find("CategoryHeaderMasked").gameObject.Destroy();
+                RoleOptionIntializer.RoleTemplate.Get().transform.Find("CategoryHeaderMasked").gameObject.SetActive(false);
                 RoleOptionController.HandleOpen(__instance);
             }
         }

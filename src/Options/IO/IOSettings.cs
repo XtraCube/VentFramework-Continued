@@ -7,6 +7,13 @@ namespace VentLib.Options.IO;
 
 public class IOSettings
 {
+    public IOSettings()
+    {
+        
+    }
+    
+    public IOSettings(Option option) => Source = new(option);
+    
     public Optional<Option> Source = Optional<Option>.Null();
 
     public ADEAnswer UnknownValueAction { get; set; } = ADEAnswer.UseDefault;

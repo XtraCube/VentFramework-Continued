@@ -18,8 +18,8 @@ public class SearchBar: ISearchBar
     private Func<Sprite> iconSupplier;
     public SearchBar(Func<Sprite>? barSupplier = null, Func<Sprite>? iconSupplier = null, Vector2? iconLocPosition = null, int charLimit = 20, bool greenOnHover = true, string placeHolderText = "")
     {
-        this.iconSupplier = iconSupplier ?? (() => AssetLoader.LoadSprite("assets.defaultsearchiconblack.png", 100, true));
-        this.barSupplier = barSupplier ?? (() => AssetLoader.LoadSprite("assets.defaultsearchbar.png", 300, true));
+        this.iconSupplier = iconSupplier ?? (() => AssetLoader.LoadSprite("defaultsearchiconblack.png", 100, true));
+        this.barSupplier = barSupplier ?? (() => AssetLoader.LoadSprite("defaultsearchbar.png", 300, true));
         this.iconLocPosition = iconLocPosition ?? new Vector2(2.3f, 0);
         this.placeHolderText = placeHolderText;
         this.greenOnHover = greenOnHover;

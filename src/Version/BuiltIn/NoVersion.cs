@@ -1,4 +1,5 @@
 using Hazel;
+using VentLib.Options.UI;
 
 namespace VentLib.Version.BuiltIn;
 
@@ -18,4 +19,6 @@ public sealed class NoVersion: Version
     public override string ToSimpleName() => "";
 
     public override string ToString() => "NoVersion";
+    
+    public override bool Equals(object? obj) => false; // A 'NoVersion' does not equal a 'NoVersion'.
 }

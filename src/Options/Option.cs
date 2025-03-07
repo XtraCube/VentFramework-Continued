@@ -2,21 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Hazel;
 using VentLib.Logging;
 using VentLib.Networking.Interfaces;
+using VentLib.Networking.RPC;
 using VentLib.Options.Enum;
 using VentLib.Options.Events;
 using VentLib.Options.Interfaces;
 using VentLib.Options.IO;
 using VentLib.Utilities.Optionals;
+using VentLib.Version;
 
 namespace VentLib.Options;
 
 public class Option: IRpcSendable<Option>
 {
     private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(Option));
+    private static ModRPC _modRPC = Vents.FindRPC((uint)VentCall.SyncSingleOption)!;
     // ReSharper disable once InconsistentNaming
     internal string name = null!;
     internal string? key;
@@ -50,7 +54,11 @@ public class Option: IRpcSendable<Option>
 
     public string Qualifier() => Parent.Map(p => p.Qualifier() + ".").OrElse("") + Key();
     internal int InternalLevel() => Parent.Exists() ? Parent.Get().InternalLevel() + 1 : 0;
-    
+
+    public Option()
+    {
+        IOSettings = new(this);
+    }
 
     public void AddChild(Option child)
     {
@@ -88,6 +96,7 @@ public class Option: IRpcSendable<Option>
         
         OptionValueEvent optionValueEvent = new(this, oldValue, value.Value);
         EventHandlers.ForEach(eh => eh(optionValueEvent));
+        SyncOption();
         return value.Value;
     }
 
@@ -100,6 +109,7 @@ public class Option: IRpcSendable<Option>
 
         OptionValueEvent optionValueEvent = new(this, oldValue, Value.Get().Value);
         if (triggerEvent) EventHandlers.ForEach(eh => eh(optionValueEvent));
+        SyncOption();
         return index;
     }
 
@@ -166,15 +176,40 @@ public class Option: IRpcSendable<Option>
 
     public Option Read(MessageReader reader)
     {
-        log.Warn("Message reading is currently a WIP");
-        return new Option();
+        string qualifier = reader.ReadString();
+        int valueIndex = reader.ReadInt32();
+        
+        if (!OptionManager.AllOptions.TryGetValue(qualifier, out Option? targetOption))
+            return new NullOption();
+        
+        targetOption.SetValue(valueIndex);
+
+        return targetOption;
     }
 
     public void Write(MessageWriter writer)
     {
-        log.Warn("Message writing is currently a WIP");
+        writer.Write(Qualifier());
+        writer.Write(Index.OrElse(0));
+    }
+
+    private void SyncOption()
+    {
+        if (VersionControl.Instance == null) return;
+        if (!VersionControl.Instance.GetModdedPlayers().Any()) return;
+        if (Manager == null) return;
+        if (!Manager.Flags().HasFlag(OptionManagerFlags.SyncOverRpc)) return;
+        _modRPC.Send(null, new VentRPC.NetworkedOption(this, Index.OrElse(0)));
     }
 
     internal bool HasParent() => Parent.Exists();
     internal Option GetAncestor() => HasParent() ? Parent.Get().GetAncestor() : this;
+}
+
+/// <summary>
+/// A class representing an option that doesn't exist on this client.
+/// </summary>
+public class NullOption : Option
+{
+    
 }

@@ -38,19 +38,8 @@ public class RoleOptionsRenderer : IRoleOptionRender
         tabs.ForEach((tb, index) =>
         {
             // Create Title Card
-            Color[] colors;
-            string name;
-            if (tb is GameOptionTab)
-            {
-                GameOptionTab gameOptionTab = (GameOptionTab)tb;
-                name = gameOptionTab.name;
-                colors = gameOptionTab.HeaderColors().OrElseGet(() => GetColorsFromName(name));
-            }
-            else
-            {
-                name = nameof(tb) + " Settings";
-                colors = GetColorsFromName(name);
-            }
+            string name = tb.Name;
+            Color[] colors = tb.HeaderColors().OrElseGet(() => GetColorsFromName(name));
             CategoryHeaderEditRole categoryHeaderEditRole = UnityEngine.Object.Instantiate<CategoryHeaderEditRole>(menu.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, menu.RoleChancesSettings.transform);
             categoryHeaderEditRole.SetHeader(name, 20, colors);
             categoryHeaderEditRole.transform.localPosition = new Vector3(4.986f, Height, -2f);
@@ -71,9 +60,8 @@ public class RoleOptionsRenderer : IRoleOptionRender
                     undefinedOption.BindPlusMinusButtons();
                     Height -= 0.64f;
                     return;
-                }
-                else if (opt is not RoleOption) return;
-                RoleOption roleOptionInstance = (opt as RoleOption)!;
+                } 
+                if (opt is not RoleOption roleOptionInstance) return;
                 RoleOptionSetting roleOptionSetting = UnityEngine.Object.Instantiate<RoleOptionSetting>(menu.roleOptionSettingOrigin, Vector3.zero, Quaternion.identity, menu.RoleChancesSettings.transform);
                 roleOptionSetting.transform.localPosition = new Vector3(-0.15f, Height, -2f);
                 roleOptionSetting.OnValueChanged = new System.Action<OptionBehaviour>(_ => { });

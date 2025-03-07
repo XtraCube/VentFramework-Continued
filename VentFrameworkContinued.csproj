@@ -15,6 +15,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
         <GitVersion>false</GitVersion>
+        <DocumentationFile>bin\Debug\VentFrameworkContinued.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup>
