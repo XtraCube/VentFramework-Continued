@@ -3,18 +3,19 @@ using VentLib.Options.UI.Options;
 using System.Collections.Generic;
 using VentLib.Options.Enum;
 using System.Linq;
+using VentLib.Options.Interfaces;
 
 namespace VentLib.Options.UI.Tabs;
 
-public class MainSettingTab
+public class MainSettingTab: IMainSettingTab
 {
     private List<GameOption> Options { get; }
-    public string buttonText { get ;}
-    public string areaDescription { get; }
+    public string ButtonText { get; }
+    public string AreaDescription { get; }
     public MainSettingTab(string buttonText, string areaDescription)
     {
-        this.buttonText = buttonText;
-        this.areaDescription = areaDescription;
+        ButtonText = buttonText;
+        AreaDescription = areaDescription;
         Options = new();
     }
 
