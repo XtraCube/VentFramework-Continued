@@ -7,7 +7,7 @@ using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Optionals;
 
 namespace VentLib.Options.UI.Options;
-public class TextOption: GameOption
+public class TextOption: GameOption, IGameOptionInstance
 {
     internal UnityOptional<StringOption> Behaviour = new();
 
@@ -70,6 +70,12 @@ public class TextOption: GameOption
         
         OptionValueDecrementEvent decrementEvent = new(this, oldValue, newValue);
         EventHandlers.ForEach(eh => eh(decrementEvent));
+    }
+    public void UpdateOption()
+    {
+        Behaviour.IfPresent(b => {
+            b.ValueText.text = GetValueText();
+        });
     }
 
     internal void BindPlusMinusButtons()

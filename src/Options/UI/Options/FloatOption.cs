@@ -8,7 +8,7 @@ using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Optionals;
 
 namespace VentLib.Options.UI.Options;
-public class FloatOption: GameOption
+public class FloatOption: GameOption, IGameOptionInstance
 {
     // a float option uses the string class yes. fight me
     internal UnityOptional<StringOption> Behaviour = new();
@@ -71,6 +71,13 @@ public class FloatOption: GameOption
         
         OptionValueDecrementEvent decrementEvent = new(this, oldValue, newValue);
         EventHandlers.ForEach(eh => eh(decrementEvent));
+    }
+    
+    public void UpdateOption()
+    {
+        Behaviour.IfPresent(b => {
+            b.ValueText.text = GetValueText();
+        });
     }
 
     internal void BindPlusMinusButtons()

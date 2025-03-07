@@ -7,14 +7,14 @@ using VentLib.Utilities.Optionals;
 using VentLib.Utilities.Extensions;
 
 namespace VentLib.Options.UI.Options;
-public class RoleOption: GameOption
+public class RoleOption: GameOption, IGameOptionInstance
 {
     internal Optional<RoleOptionIntializer.RoleOptionIntialized> SettingsHolder = new();
     internal UnityOptional<RoleOptionSetting> Behaviour = new();
 
     internal Action<RoleOptionIntializer.RoleOptionIntialized>? roleInitializerSetup;
-    internal FloatOption PercentageOption = null!;
-    internal FloatOption MaximumOption = null!;
+    internal FloatOption? PercentageOption = null!;
+    internal FloatOption? MaximumOption = null!;
 
     internal void HideMembers()
     {
@@ -48,33 +48,41 @@ public class RoleOption: GameOption
 
     public void IncrementChance()
     {
-        PercentageOption.Increment();
+        PercentageOption?.Increment();
         Behaviour.IfPresent(b => {
-            b.chanceText.text = PercentageOption.GetValueText();
+            b.chanceText.text = PercentageOption?.GetValueText();
         });
     }
 
     public void DecrementChance()
     {
-        PercentageOption.Decrement();
+        PercentageOption?.Decrement();
         Behaviour.IfPresent(b => {
-            b.chanceText.text = PercentageOption.GetValueText();
+            b.chanceText.text = PercentageOption?.GetValueText();
         });
     }
 
     public void IncrementRoleCount()
     {
-        MaximumOption.Increment();
+        MaximumOption?.Increment();
         Behaviour.IfPresent(b => {
-            b.countText.text = MaximumOption.GetValueText();
+            b.countText.text = MaximumOption?.GetValueText();
         });
     }
 
     public void DecrementRoleCount()
     {
-        MaximumOption.Decrement();
+        MaximumOption?.Decrement();
         Behaviour.IfPresent(b => {
             b.countText.text = MaximumOption.GetValueText();
+        });
+    }
+
+    public void UpdateOption()
+    {
+        Behaviour.IfPresent(b => {
+            b.countText.text = MaximumOption?.GetValueText();
+            b.chanceText.text = PercentageOption?.GetValueText();
         });
     }
 

@@ -7,7 +7,7 @@ using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Optionals;
 
 namespace VentLib.Options.UI.Options;
-public class BoolOption: GameOption
+public class BoolOption: GameOption, IGameOptionInstance
 {
     // use "Toggle" so we have a checkmark
     internal UnityOptional<ToggleOption> Behaviour = new();
@@ -49,6 +49,8 @@ public class BoolOption: GameOption
         OptionValueIncrementEvent incrementEvent = new(this, oldValue, newValue);
         EventHandlers.ForEach(eh => eh(incrementEvent));
     }
+    
+    public void UpdateOption() => Behaviour.IfPresent(b => b.CheckMark.enabled = (bool)GetValue());
 
     public void Decrement() => Increment();
 

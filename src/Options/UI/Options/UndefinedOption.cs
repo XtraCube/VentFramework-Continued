@@ -11,7 +11,7 @@ using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Optionals;
 
 namespace VentLib.Options.UI.Options;
-public class UndefinedOption: GameOption
+public class UndefinedOption: GameOption, IGameOptionInstance
 {
     // This class should only be used for CategoryHeaders.
     internal UnityOptional<PlayerOption> Behaviour = UnityOptional<PlayerOption>.Null();
@@ -49,6 +49,11 @@ public class UndefinedOption: GameOption
     }
 
     public void Decrement()
+    {
+        
+    }
+    
+    public void UpdateOption()
     {
         
     }
