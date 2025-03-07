@@ -174,7 +174,8 @@ public class LobbyViewSettingsPanePatch
             }
             pane.settingsInfo.Add(viewSettingsInfoPanel.gameObject);
         });
-        pane.scrollBar.CalculateAndSetYBounds((float)(pane.settingsInfo.Count + 10), 2f, 6f, 0.85f);
+        // pane.scrollBar.CalculateAndSetYBounds((float)(pane.settingsInfo.Count + 10), 2f, 6f, 0.85f);
+        pane.scrollBar.SetYBoundsMax(-num);
     }
 
     private static void RefreshTabForRole(LobbyViewSettingsPane pane)
