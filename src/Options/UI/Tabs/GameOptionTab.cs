@@ -16,7 +16,7 @@ public class GameOptionTab : IGameOptionTab
 {
     private static readonly StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(GameOptionTab));
     private List<GameOption> Options { get; } = new();
-    public string name;
+    public string Name { get; }
     private Func<Sprite> spriteSupplier;
     private Optional<Color[]> headerColors = new();
 
@@ -30,7 +30,7 @@ public class GameOptionTab : IGameOptionTab
 
     public GameOptionTab(string name, Func<Sprite> spriteSupplier, Color[]? c = null)
     {
-        this.name = name;
+        Name = name;
         this.spriteSupplier = spriteSupplier;
         if (c != null) headerColors = Optional<Color[]>.NonNull(c); 
     }
@@ -69,7 +69,7 @@ public class GameOptionTab : IGameOptionTab
 
         innerMenu.OrElseSet(() => {
             GameObject copy = Object.Instantiate(menu.transform.Find("Scroller/SliderInner/AdvancedTab").gameObject, menu.transform.Find("Scroller/SliderInner"));
-            copy.name = name;
+            copy.name = Name;
             for (int i = 0; i < copy.transform.childCount; i++)
             {
                 Transform child = copy.transform.GetChild(i);
@@ -77,7 +77,7 @@ public class GameOptionTab : IGameOptionTab
             }
             Transform headerTextTransform = copy.transform.Find("CategoryHeaderMasked/HeaderText");
             headerTextTransform.GetComponent<TextMeshPro>().enabled = true;
-            headerTextTransform.GetComponent<TextMeshPro>().text = name;
+            headerTextTransform.GetComponent<TextMeshPro>().text = Name;
             headerTextTransform.gameObject.SetActive(true);
             return copy;
         });
@@ -107,14 +107,14 @@ public class GameOptionTab : IGameOptionTab
 
     public void Activate()
     {
-        log.Info($"Activated Tab \"{name}\"", "TabSwitch");
+        log.Info($"Activated Tab \"{Name}\"", "TabSwitch");
         GetPassiveButton().IfPresent(button => button.SelectButton(true));
         innerMenu.IfPresent(menu => menu.SetActive(true));
     }
 
     public void Deactivate()
     {
-        log.Debug($"Deactivated Tab \"{name}\"", "TabSwitch");
+        log.Debug($"Deactivated Tab \"{Name}\"", "TabSwitch");
         GetPassiveButton().IfPresent(button => button.SelectButton(false));
         innerMenu.IfPresent(menu => menu.SetActive(false));
     }

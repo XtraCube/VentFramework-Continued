@@ -18,7 +18,7 @@ public class DefaultLogConfig
 
     public DefaultLogConfig()
     {
-        OptionManager manager = OptionManager.GetManager(file: "logging.txt");
+        OptionManager manager = OptionManager.GetManager(file: "logging.txt", managerFlags:OptionManagerFlags.IgnorePreset);
         ConsoleLevel = new OptionBuilder()
             .Name("Console Level")
             .Description("The minimum level for logs written to the console.\nValues = [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL]")

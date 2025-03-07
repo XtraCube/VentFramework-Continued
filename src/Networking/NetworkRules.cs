@@ -39,7 +39,7 @@ public class NetworkRules
 
     static NetworkRules()
     {
-        OptionManager networkManager = OptionManager.GetManager(file: "network.config");
+        OptionManager networkManager = OptionManager.GetManager(file: "network.config", managerFlags: OptionManagerFlags.IgnorePreset);
         _packetSizeOption = new OptionBuilder()
             .Key("Max Packet Size")
             .Value(AbsoluteMaxPacketSize)

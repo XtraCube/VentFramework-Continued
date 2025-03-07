@@ -18,16 +18,23 @@ public abstract class VanillaTab: IGameOptionTab
     private OrderedSet<GameOption> options = new();
     private readonly List<Action<IGameOptionTab>> callbacks = new();
 
+    public string Name { get; }
+
+    public VanillaTab()
+    {
+        Name = GetType().Name;
+    }
+
     public void Activate()
     {
-        log.Info($"Activated Vanilla Tab: \"{GetType().Name}\"", "TabSwitch");
+        log.Info($"Activated Vanilla Tab: \"{Name}\"", "TabSwitch");
         PassiveButton().IfPresent(pb => pb.SelectButton(true));
         RelatedMenu.IfPresent(menu => menu.ChangeTab(roleCategory, TabButton.Get().Button));
     }
     
     public void Deactivate()
     {
-        log.Debug($"Deactivated Vanilla Tab: \"{GetType().Name}\"", "TabSwitch");
+        log.Debug($"Deactivated Vanilla Tab: \"{Name}\"", "TabSwitch");
         PassiveButton().IfPresent(pb => pb.SelectButton(false));
         RelatedMenu.IfPresent(menu => {
             for (int i = 0; i < menu.advancedSettingChildren.Count; i++)

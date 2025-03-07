@@ -8,6 +8,7 @@ using VentLib.Logging.Default;
 using VentLib.Options.Events;
 using VentLib.Options.Interfaces;
 using VentLib.Options.IO;
+using VentLib.Options.UI.Options;
 using VentLib.Utilities;
 using VentLib.Utilities.Collections;
 using VentLib.Utilities.Extensions;
@@ -21,33 +22,36 @@ public class OptionManager
     internal static Dictionary<Assembly, List<OptionManager>> Managers = new();
     internal static Dictionary<String, Option> AllOptions = new();
 
-    private readonly EssFile essFile = new();
-    private readonly OrderedDictionary<string, Option> options = new();
-    private FileInfo file;
-    
     private OrderedSet<Action<IOptionEvent>> optionEventHandlers = new();
-    private bool saving;
+    private readonly OrderedDictionary<string, Option> options = new();
+    private readonly OptionManagerFlags flags;
+    private readonly EssFile essFile = new();
     private string filePath;
+    private FileInfo file;
+    private bool saving;
 
-    internal OptionManager(Assembly assembly, string path)
+    internal OptionManager(Assembly assembly, string path, OptionManagerFlags managerFlags)
     {
         string name = AssemblyUtils.GetAssemblyRefName(assembly);
-        string optionPath = name == "root" ? OptionPath : Path.Join(OptionPath, name);
+        string optionPath;
+        if (managerFlags.HasFlag(OptionManagerFlags.IgnorePreset)) optionPath = name == "root" ? OptionPath : Path.Join(OptionPath, name);
+        else optionPath = Path.Combine(OptionPath, PresetManager.CurrentPreset.FolderName(), name == "root" ? "" : name);
         DirectoryInfo optionDirectory = new(optionPath);
         if (!optionDirectory.Exists) optionDirectory.Create();
+        flags = managerFlags;
         filePath = path;
         file = optionDirectory.GetFile(path);
         essFile.ParseFile(file.FullName);
     }
 
-    public static OptionManager GetManager(Assembly? assembly = null, string? file = null)
+    public static OptionManager GetManager(Assembly? assembly = null, string? file = null, OptionManagerFlags managerFlags = OptionManagerFlags.None)
     {
         file ??= DefaultFile;
         assembly ??= Assembly.GetCallingAssembly();
         List<OptionManager> managers = Managers.GetOrCompute(assembly, () => new List<OptionManager>());
         OptionManager? manager = managers.FirstOrDefault(m => m.filePath == file);
         if (manager != null) return manager;
-        manager = new OptionManager(assembly, file);
+        manager = new OptionManager(assembly, file, managerFlags);
         managers.Add(manager);
         return manager;
     }
@@ -58,6 +62,30 @@ public class OptionManager
         return Managers.GetOrCompute(assembly, () => new List<OptionManager>());
     }
 
+    internal static void OnChangePreset()
+    {
+        Managers.ForEach(kvp => kvp.Value.ForEach(m =>
+        {
+            if (m.flags.HasFlag(OptionManagerFlags.IgnorePreset)) return;
+            m.SaveAll(); // Save current settings.
+            string name = AssemblyUtils.GetAssemblyRefName(kvp.Key);
+            
+            // Reset File
+            string optionPath = Path.Combine(OptionPath, PresetManager.CurrentPreset.FolderName(), name == "root" ? "" : name);
+            DirectoryInfo optionDirectory = new(optionPath);
+            if (!optionDirectory.Exists) optionDirectory.Create();
+            m.file = optionDirectory.GetFile(m.filePath);
+            m.essFile.ParseFile(m.file.FullName);
+            // NoDepLogger.Info($"Reloaded {m.file.FullName}.");
+            m.saving = false;
+        }));
+        AllOptions.Values.Where(o => !o.Manager?.flags.HasFlag(OptionManagerFlags.IgnorePreset) ?? false).ForEach(o =>
+        {
+            o.Manager!.Load(o, true);
+            if (o is IGameOptionInstance gameOptionInstance) gameOptionInstance.UpdateOption();
+        });
+    }
+
     // ReSharper disable once ReturnTypeCanBeNotNullable
     public Option? GetOption(string qualifier)
     {
@@ -65,6 +93,8 @@ public class OptionManager
             .CoalesceEmpty(() => AllOptions.GetOptional(qualifier))
             .OrElse(null!);
     }
+    
+    public OptionManagerFlags Flags() => flags;
 
     public List<Option> GetOptions() => options.GetValues().ToList();
 
@@ -101,7 +131,7 @@ public class OptionManager
             NoDepLogger.Warn($"Failed to load option ({option.Qualifier()})" + createString);
             if (!create) return;
             essFile.WriteToCache(option);
-            DelaySave();
+            DelaySave(fullName:file.FullName);
         }
         catch (Exception exception)
         {
@@ -109,21 +139,22 @@ public class OptionManager
         }
     }
 
-    internal void SaveAll(bool updateAll = true)
+    internal void SaveAll(bool updateAll = true, string? fullName = null)
     {
+        if (fullName != null && fullName != file.FullName) return; // Stop saving for old files.
         NoDepLogger.Trace($"Saving Options to \"{filePath}\"", "OptionSave");
         if (updateAll) GetOptions().ForEach(o => essFile.WriteToCache(o));
-        essFile.Dump(file.FullName);
+        essFile.Dump(fullName ?? file.FullName);
         NoDepLogger.Trace("Saved Options", "OptionSave");
     }
 
-    public void DelaySave(float delay = 10f, bool updateAll = true)
+    public void DelaySave(float delay = 10f, bool updateAll = true, string? fullName = null)
     {
         if (saving) return;
         saving = true;
         Async.ScheduleThreaded(() =>
         {
-            SaveAll(updateAll);
+            SaveAll(updateAll, fullName);
             saving = false;
         }, delay);
     }
@@ -134,9 +165,46 @@ public class OptionManager
     }
 }
 
+/// <summary>
+/// An enum about the ways an Option can be loaded.
+/// </summary>
 public enum OptionLoadMode
 {
+    /// <summary>
+    /// Nothing will happen.
+    /// </summary>
     None,
+    
+    /// <summary>
+    /// The option will be loaded if found in the file.
+    /// </summary>
     Load,
+    
+    /// <summary>
+    /// The option will be loaded if found in the file and created if not.
+    /// </summary>
     LoadOrCreate
+}
+
+/// <summary>
+/// An enum flag for specifying the properties of an Option Manager.
+/// </summary>
+[Flags]
+public enum OptionManagerFlags
+{
+    /// <summary>
+    /// No flags.
+    /// </summary>
+    None = 0,
+    
+    /// <summary>
+    /// A manager bearing this flag will retain the same settings if the user changes presets.
+    /// </summary>
+    IgnorePreset = 1,
+    
+    /// <summary>
+    /// A manager bearing this flag will have its settings automatically synced over RPC. <br/>
+    /// The players must be on the same version for this to happen.
+    /// </summary>
+    SyncOverRpc = 2
 }

@@ -15,7 +15,7 @@ public class LocalizerSettings
     
     static LocalizerSettings()
     {
-        OptionManager manager = new(Assembly.GetExecutingAssembly(), "locale.config");
+        OptionManager manager = new(Assembly.GetExecutingAssembly(), "locale.config", OptionManagerFlags.IgnorePreset);
         Option languageFolderOption = new OptionBuilder().Name("Language Folder")
             .Description("Folder where translations are stored")
             .Value("Languages")
