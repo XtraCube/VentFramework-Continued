@@ -8,6 +8,7 @@ namespace VentLib.Options.Interfaces;
 
 public interface IGameOptionTab
 {
+    string Name { get; }
     void Activate();
 
     void Deactivate();

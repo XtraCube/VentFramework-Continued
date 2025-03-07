@@ -28,7 +28,7 @@ public static class RoleOptionController
     private static readonly List<IGameOptionTab> BuiltinGameTabs = new List<IGameOptionTab>() { new EngineerTab(), new GuardianAngelTab(), new ScientistTab(),
                                                                                                 new TrackerTab(), new NoisemakerTab(), new ShapeshifterTab(), new PhantomTab() };
     private static UnityOptional<RolesSettingsMenu> _lastInitialized = new();
-    private static IRoleOptionRender _renderer = new RoleOptionsRenderer();
+    internal static IRoleOptionRender _renderer = new RoleOptionsRenderer();
     private static OrderedSet<Action<IControllerEvent>> _tabEvents = new();
     public static RenderOptions RenderOptions { get; set; } = new();
     private static readonly OrderedSet<GameOptionTab> Tabs = new();
@@ -50,7 +50,7 @@ public static class RoleOptionController
         }
     }
 
-    private static IGameOptionTab[] AllTabs(bool allowIgnoredFiles = false) => BuiltinGameTabs.Concat(Tabs).Where(t => allowIgnoredFiles | !t.Ignore()).ToArray();
+    internal static IGameOptionTab[] AllTabs(bool allowIgnoredFiles = false) => BuiltinGameTabs.Concat(Tabs).Where(t => allowIgnoredFiles | !t.Ignore()).ToArray();
 
     public static void Enable() => Enabled = true;
     
@@ -208,11 +208,11 @@ public static class RoleOptionController
         {
             case OptionType.String:
                 TextOption textOption = (option as TextOption)!;
-                StringGameSetting stringGameSetting = new() {
-                    OptionName = Int32OptionNames.Invalid,
-                    Values = Enumerable.Repeat(StringNames.None, option.Values.Count).ToArray(),
-                    Index = option.DefaultIndex,
-                };
+                StringGameSetting stringGameSetting = ScriptableObject.CreateInstance<StringGameSetting>();
+                stringGameSetting.Values = Enumerable.Repeat(StringNames.None, option.Values.Count).ToArray();
+                stringGameSetting.OptionName = Int32OptionNames.Invalid;
+                stringGameSetting.Index = option.DefaultIndex;
+                stringGameSetting.Type = OptionTypes.String;
                 StringOption stringBehavior = UnityEngine.Object.Instantiate<StringOption>(menu.stringOptionOrigin, Vector3.zero, Quaternion.identity, CurrentTab.OptionParent());
                 stringBehavior.name = "ModdedSetting";
 			    stringBehavior.SetClickMask(menu.ButtonClickMask);
@@ -227,9 +227,9 @@ public static class RoleOptionController
                 break;
             case OptionType.Bool:
                 BoolOption boolOption = (option as BoolOption)!;
-                CheckboxGameSetting checkboxSettings = new() {
-                    OptionName = BoolOptionNames.Invalid
-                };
+                CheckboxGameSetting checkboxSettings = ScriptableObject.CreateInstance<CheckboxGameSetting>();
+                checkboxSettings.OptionName = BoolOptionNames.Invalid;
+                checkboxSettings.Type = OptionTypes.Checkbox;
                 ToggleOption toggleBehavior = UnityEngine.Object.Instantiate<ToggleOption>(menu.checkboxOrigin, Vector3.zero, Quaternion.identity, CurrentTab.OptionParent());
                 toggleBehavior.name = "ModdedSetting";
 			    toggleBehavior.SetClickMask(menu.ButtonClickMask);
@@ -244,11 +244,11 @@ public static class RoleOptionController
             case OptionType.Int:
             case OptionType.Float:
                 FloatOption floatOption = (option as FloatOption)!;
-                StringGameSetting numberGameSetting = new() {
-                    OptionName = Int32OptionNames.Invalid,
-                    Values = Enumerable.Repeat(StringNames.Admin, option.Values.Count).ToArray(),
-                    Index = option.DefaultIndex,
-                };
+                StringGameSetting numberGameSetting = ScriptableObject.CreateInstance<StringGameSetting>();
+                numberGameSetting.Values = Enumerable.Repeat(StringNames.None, option.Values.Count).ToArray();
+                numberGameSetting.OptionName = Int32OptionNames.Invalid;
+                numberGameSetting.Index = option.DefaultIndex;
+                numberGameSetting.Type = OptionTypes.String;
                 StringOption numberBehavior = UnityEngine.Object.Instantiate<StringOption>(menu.stringOptionOrigin, Vector3.zero, Quaternion.identity, CurrentTab.OptionParent());
                 numberBehavior.name = "ModdedSetting";
 			    numberBehavior.SetClickMask(menu.ButtonClickMask);

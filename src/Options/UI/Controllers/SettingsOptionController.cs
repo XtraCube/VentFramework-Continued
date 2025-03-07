@@ -16,6 +16,8 @@ using VentLib.Utilities.Attributes;
 using VentLib.Utilities.Extensions;
 using VentLib.Options.UI.Controllers.Search;
 using Rewired.Utils;
+using VentLib.Options.Events;
+using VentLib.Utilities.Collections;
 
 namespace VentLib.Options.UI.Controllers;
 
@@ -25,12 +27,13 @@ public static class SettingsOptionController
     private static readonly StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(SettingsOptionController));
     private static IGameOptionRenderer OptionRenderer = new SettingsRenderer();
     private static UnityOptional<GameSettingMenu> _lastInitialized = new();
+    private static OrderedSet<Action<IControllerEvent>> _tabEvents = new();
     public static RenderOptions RenderOptions { get; set; } = new();
-    private static MainSettingTab _mainSettingsTab = null!;
+    private static IMainSettingTab _mainSettingsTab = null!;
     internal static bool ModSettingsOpened = false;
     internal static bool Enabled;
 
-    public static MainSettingTab MainSettingsTab
+    public static IMainSettingTab MainSettingsTab
     {
         get => _mainSettingsTab;
         set
@@ -47,11 +50,16 @@ public static class SettingsOptionController
 
     public static void Enable() => Enabled = true;
 
-    public static void SetMainTab(MainSettingTab tab) => MainSettingsTab = tab;
+    public static void SetMainTab(IMainSettingTab tab) => MainSettingsTab = tab;
 
     public static void SetRenderer(IGameOptionRenderer iRenderer)
     {
         OptionRenderer = iRenderer;
+    }
+    
+    public static void RegisterEventHandler(Action<IControllerEvent> eventHandler)
+    {
+        _tabEvents.Add(eventHandler);
     }
 
     internal static void Start(GameSettingMenu menu)
@@ -110,7 +118,7 @@ public static class SettingsOptionController
             if (ModSettingsOpened) gameSettingsButton.SelectButton(false); else if (!menu.GameSettingsTab.gameObject.active) gameSettingsButton.SelectButton(false);
         }));
         var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        Async.Schedule(() => { label.text = MainSettingsTab.buttonText; }, 0.05f);
+        Async.Schedule(() => { label.text = MainSettingsTab.ButtonText; }, 0.05f);
         if (ModSettingsOpened) Async.Schedule(() => { OpenModSettings(menu, button, true); }, 0.25f);
         // MainSettingsTab.GetOptions().ForEach(child => child.Setup = false);
     }
@@ -133,7 +141,7 @@ public static class SettingsOptionController
             text.color = new Color(0.6706f, 0.8902f, 0.8667f);
         }
         modSettingsButton.SelectButton(true);
-        menu.MenuDescriptionText.text = MainSettingsTab.areaDescription;
+        menu.MenuDescriptionText.text = MainSettingsTab.AreaDescription;
         menu.GameSettingsTab.gameObject.SetActive(true);
     }
 
@@ -169,11 +177,11 @@ public static class SettingsOptionController
         {
             case OptionType.String:
                 TextOption textOption = (option as TextOption)!;
-                StringGameSetting stringGameSetting = new() {
-                    OptionName = Int32OptionNames.Invalid,
-                    Values = Enumerable.Repeat(StringNames.None, option.Values.Count).ToArray(),
-                    Index = option.DefaultIndex,
-                };
+                StringGameSetting stringGameSetting = ScriptableObject.CreateInstance<StringGameSetting>();
+                stringGameSetting.Values = Enumerable.Repeat(StringNames.None, option.Values.Count).ToArray();
+                stringGameSetting.OptionName = Int32OptionNames.Invalid;
+                stringGameSetting.Index = option.DefaultIndex;
+                stringGameSetting.Type = OptionTypes.String;
                 StringOption stringBehavior = UnityEngine.Object.Instantiate<StringOption>(menu.stringOptionOrigin, Vector3.zero, Quaternion.identity, menu.settingsContainer);
                 stringBehavior.name = "ModdedSetting";
 			    stringBehavior.SetClickMask(menu.ButtonClickMask);
@@ -188,9 +196,9 @@ public static class SettingsOptionController
                 break;
             case OptionType.Bool:
                 BoolOption boolOption = (option as BoolOption)!;
-                CheckboxGameSetting checkboxSettings = new() {
-                    OptionName = BoolOptionNames.Invalid
-                };
+                CheckboxGameSetting checkboxSettings = ScriptableObject.CreateInstance<CheckboxGameSetting>();
+                checkboxSettings.OptionName = BoolOptionNames.Invalid;
+                checkboxSettings.Type = OptionTypes.Checkbox;
                 ToggleOption toggleBehavior = UnityEngine.Object.Instantiate<ToggleOption>(menu.checkboxOrigin, Vector3.zero, Quaternion.identity);
                 toggleBehavior.name = "ModdedSetting";
 			    toggleBehavior.SetClickMask(menu.ButtonClickMask);
@@ -205,11 +213,11 @@ public static class SettingsOptionController
             case OptionType.Int:
             case OptionType.Float:
                 FloatOption floatOption = (option as FloatOption)!;
-                StringGameSetting numberGameSetting = new() {
-                    OptionName = Int32OptionNames.Invalid,
-                    Values = Enumerable.Repeat(StringNames.Admin, option.Values.Count).ToArray(),
-                    Index = option.DefaultIndex,
-                };
+                StringGameSetting numberGameSetting = ScriptableObject.CreateInstance<StringGameSetting>();
+                numberGameSetting.Values = Enumerable.Repeat(StringNames.None, option.Values.Count).ToArray();
+                numberGameSetting.OptionName = Int32OptionNames.Invalid;
+                numberGameSetting.Index = option.DefaultIndex;
+                numberGameSetting.Type = OptionTypes.String;
                 StringOption numberBehavior = UnityEngine.Object.Instantiate<StringOption>(menu.stringOptionOrigin, Vector3.zero, Quaternion.identity, menu.settingsContainer);
                 numberBehavior.name = "ModdedSetting";
 			    numberBehavior.SetClickMask(menu.ButtonClickMask);
@@ -224,9 +232,9 @@ public static class SettingsOptionController
                 break;
             case OptionType.Player:
                 UndefinedOption undefinedPlayerOption = (option as UndefinedOption)!;
-                PlayerSelectionGameSetting playerGameSetting = new() {
-                    OptionName = Int32OptionNames.Invalid
-                };
+                PlayerSelectionGameSetting playerGameSetting = ScriptableObject.CreateInstance<PlayerSelectionGameSetting>();
+                playerGameSetting.OptionName = Int32OptionNames.Invalid;
+                playerGameSetting.Type = OptionTypes.Player;
                 PlayerOption optionBehaviour = UnityEngine.Object.Instantiate<PlayerOption>(menu.playerOptionOrigin, Vector3.zero, Quaternion.identity, menu.settingsContainer);
                 optionBehaviour.name = "ModdedSetting";
 			    optionBehaviour.SetClickMask(menu.ButtonClickMask);
@@ -255,7 +263,7 @@ public static class SettingsOptionController
         OptionRenderer.Render(option, (option.Level, index), RenderOptions, menu);
     }
 
-    private static void SwitchTab(MainSettingTab? newTab)
+    private static void SwitchTab(IMainSettingTab? newTab)
     {
         _mainSettingsTab?.Deactivate();
         newTab?.Activate();
@@ -264,9 +272,12 @@ public static class SettingsOptionController
             log.Warn("Unable to Switch Tab for Option Controller");
             return;
         }
-        log.Debug($"Switching tab to {newTab?.buttonText ?? "No tab"}");
-        _lastInitialized.Get().MenuDescriptionText.text = newTab?.areaDescription ?? "Modify the custom settings to your liking.";
+        log.Debug($"Switching tab to {newTab?.ButtonText ?? "No tab"}");
+        _lastInitialized.Get().MenuDescriptionText.text = newTab?.AreaDescription ?? "Modify the custom settings to your liking.";
         var label = _lastInitialized.Get().GamePresetsButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        label.text = newTab?.buttonText ?? "MOD SETTINGS";
+        label.text = newTab?.ButtonText ?? "MOD SETTINGS";
+        
+        MainSettingChangeEvent changeEvent = new(_mainSettingsTab, newTab);
+        _tabEvents.ForEach(handler => handler(changeEvent));
     }
 }
