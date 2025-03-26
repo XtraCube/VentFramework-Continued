@@ -71,8 +71,8 @@ public static class LobbyStatusPatches
         LobbyChecker.UpdateLobbyStatus(AmongUsClient.Instance.GameId, newPlayerCount, curStatus);
     }
 
-    [QuickPrefix(typeof(NormalGameOptionsV08), nameof(NormalGameOptionsV08.SetByte))]
-    private static void UpdateMapOnChange(NormalGameOptionsV08 __instance, ByteOptionNames optionName, byte value)
+    [QuickPrefix(typeof(NormalGameOptionsV09), nameof(NormalGameOptionsV09.SetByte))]
+    private static void UpdateMapOnChange(NormalGameOptionsV09 __instance, ByteOptionNames optionName, byte value)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!NetworkRules.AllowRoomDiscovery) return;
