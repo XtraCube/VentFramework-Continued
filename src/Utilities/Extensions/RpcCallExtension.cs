@@ -65,6 +65,18 @@ public static class RpcCallExtension
             RpcCalls.CheckProtect => "CheckProtect",
             RpcCalls.Pet => "Pet",
             RpcCalls.CancelPet => "CancelPet",
+            RpcCalls.UseZipline => "UseZipline",
+            RpcCalls.TriggerSpores => "TriggerSpores",
+            RpcCalls.CheckSpore => "CheckSpore",
+            RpcCalls.CheckShapeshift => "CheckShapeshift",
+            RpcCalls.RejectShapeshift => "RejectShapeshift",
+            // skip to 60
+            RpcCalls.LobbyTimeExpiring => "LobbyTimeExpiring",
+            RpcCalls.ExtendLobbyTimer => "ExtendLobbyTimer",
+            RpcCalls.CheckVanish => "CheckVanish",
+            RpcCalls.StartVanish => "StartVanish",
+            RpcCalls.CheckAppear => "CheckAppear",
+            RpcCalls.StartAppear => "StartAppear",
             _ => rpcCalls.ToString()
         };
     }
