@@ -1,7 +1,15 @@
 namespace VentLib.Utilities.Extensions;
 
+/// <summary>
+/// A class holding extensions for the <see cref="RpcCalls"/> enum.
+/// </summary>
 public static class RpcCallExtension
 {
+    /// <summary>
+    /// Returns the name of the specific <see cref="RpcCalls"/>
+    /// </summary>
+    /// <param name="rpcCalls">The <see cref="RpcCalls"/> you want the name of.</param>
+    /// <returns></returns>
     public static string Name(this RpcCalls rpcCalls)
     {
         if ((byte)rpcCalls == 100) return "Mass";
@@ -16,15 +24,15 @@ public static class RpcCallExtension
             RpcCalls.SetName => "SetName",
             RpcCalls.CheckColor => "CheckColor",
             RpcCalls.SetColor => "SetColor",
-            RpcCalls.SetHat => "SetHat",
-            RpcCalls.SetSkin => "SetSkin",
+            RpcCalls.SetHat_Deprecated => "SetHat_Deprecated",
+            RpcCalls.SetSkin_Deprecated => "SetSkin_Deprecated",
             RpcCalls.ReportDeadBody => "ReportDeadBody",
             RpcCalls.MurderPlayer => "MurderPlayer",
             RpcCalls.SendChat => "SendChat",
             RpcCalls.StartMeeting => "StartMeeting",
             RpcCalls.SetScanner => "SetScanner",
             RpcCalls.SendChatNote => "SendChatNote",
-            RpcCalls.SetPet => "SetPet",
+            RpcCalls.SetPet_Deprecated => "SetPet_Deprecated",
             RpcCalls.SetStartCounter => "SetStartCounter",
             RpcCalls.EnterVent => "EnterVent",
             RpcCalls.ExitVent => "ExitVent",
@@ -42,8 +50,8 @@ public static class RpcCallExtension
             RpcCalls.SendQuickChat => "SendQuickChat",
             RpcCalls.BootFromVent => "BootFromVent",
             RpcCalls.UpdateSystem => "UpdateSystem",
-            RpcCalls.SetVisor => "SetVisor",
-            RpcCalls.SetNamePlate => "SetNamePlate",
+            RpcCalls.SetVisor_Deprecated => "SetVisor_Deprecated",
+            RpcCalls.SetNamePlate_Deprecated => "SetNamePlate_Deprecated",
             RpcCalls.SetLevel => "SetLevel",
             RpcCalls.SetHatStr => "SetHatStr",
             RpcCalls.SetSkinStr => "SetSkinStr",
