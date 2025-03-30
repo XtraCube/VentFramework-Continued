@@ -80,6 +80,12 @@ public class RoleOption: GameOption, IGameOptionInstance
 
     public void UpdateOption()
     {
+        MaximumOption?.Manager?.Load(MaximumOption, true);
+        MaximumOption?.UpdateOption();
+        
+        PercentageOption?.Manager?.Load(PercentageOption, true);
+        PercentageOption?.UpdateOption();
+        
         Behaviour.IfPresent(b => {
             b.countText.text = MaximumOption?.GetValueText();
             b.chanceText.text = PercentageOption?.GetValueText();

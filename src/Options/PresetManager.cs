@@ -32,6 +32,7 @@ public static class PresetManager
     private static readonly List<Preset> AllPresets;
 
     private static UnityOptional<GameSettingMenu> _lastInitialized = new();
+    private static int _savedPresetIndex = 1;
     private static int _currentPreset = 1;
     private static int _nextPresetID;
         
@@ -62,6 +63,7 @@ public static class PresetManager
         CreatePreset("Host"); // Used for when joining to sync over options.
         
         ChangePreset(_currentPreset);
+        _savedPresetIndex = _currentPreset;
     }
     
     public static void ChangePreset(string presetName)
@@ -70,6 +72,10 @@ public static class PresetManager
         if (existingPreset != null)
         {
             _currentPreset = AllPresets.IndexOf(existingPreset) + 1;
+            if (CurrentPreset.Name != "Host")
+            {
+                _savedPresetIndex = _currentPreset;
+            }
             FinishChangingPreset();
         }
         else
@@ -129,6 +135,12 @@ public static class PresetManager
         }
         AllPresets.Add(new Preset(_nextPresetID, presetName));
         _nextPresetID++;
+    }
+
+    public static void SwitchFromHost()
+    {
+        _currentPreset = _savedPresetIndex;
+        FinishChangingPreset();
     }
     
     internal static void EditSettingsMenu(GameSettingMenu menu)

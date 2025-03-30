@@ -24,6 +24,7 @@ internal static class GameJoinPatch
             Vents.VersionControl.PlayerVersions[0] = VersionControl.Instance.Version ?? new NoVersion();
         }
         if (!__instance.AmHost) PresetManager.ChangePreset("Host");
+        else PresetManager.SwitchFromHost();
         _log.Info("Refreshed Assembly Flags", "VentLib");
     }
 }
