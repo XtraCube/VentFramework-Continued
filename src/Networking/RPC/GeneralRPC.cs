@@ -4,7 +4,7 @@ namespace VentLib.Networking.RPC;
 
 public static class GeneralRPC
 {
-    public static void SendGameData(int clientId = -1)
+    public static void SendGameData(int clientId = -1, SendOption sendOption = SendOption.Reliable)
     {
         // MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
         // writer.StartMessage((byte)(clientId == -1 ? 5 : 6)); //0x05 GameData
@@ -23,7 +23,7 @@ public static class GeneralRPC
 
         // AmongUsClient.Instance.SendOrDisconnect(writer);
         // writer.Recycle();
-        MessageWriter writer = MessageWriter.Get(SendOption.None);
+        MessageWriter writer = MessageWriter.Get(sendOption);
         writer.StartMessage((byte)(clientId == -1 ? 5 : 6));
         writer.Write(AmongUsClient.Instance.GameId);
 
@@ -41,9 +41,9 @@ public static class GeneralRPC
         writer.Recycle();
     }
 
-    public static void SendMeetingHud(int clientId = -1, bool initialState = true)
+    public static void SendMeetingHud(int clientId = -1, bool initialState = true, SendOption sendOption = SendOption.Reliable)
     {
-        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+        MessageWriter writer = MessageWriter.Get(sendOption);
         writer.StartMessage((byte)(clientId == -1 ? 5 : 6)); //0x05 GameData
         {
             writer.Write(AmongUsClient.Instance.GameId);
