@@ -46,8 +46,10 @@ public static class PresetManager
             .Description("The index of the Option Preset to use.")
             .Value(_currentPreset)
             .IOSettings(io => io.UnknownValueAction = ADEAnswer.Allow)
-            .BindInt(_ => _presetOption?.Manager?.DelaySave())
-            .BuildAndRegister(presetOptions);
+            .BindInt(_ => _presetOption?.Manager?.DelaySave(0))
+            .Build();
+        _presetOption.Register(presetOptions, OptionLoadMode.LoadOrCreate);
+        _currentPreset = _presetOption.GetValue<int>();
 
         AllPresets = new();
         while (true)
@@ -139,6 +141,7 @@ public static class PresetManager
 
     public static void SwitchFromHost()
     {
+        if (CurrentPreset.Name != "Host") return;
         _currentPreset = _savedPresetIndex;
         FinishChangingPreset();
     }
