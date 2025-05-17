@@ -132,8 +132,8 @@ public partial class Vents : BasePlugin
         var _ = Async.AUCWrapper;
         RootAssemby = Assembly.GetExecutingAssembly();
         IL2CPPChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly, assembly == RootAssemby);
-        Register(Assembly.GetExecutingAssembly());
-        Harmony.PatchAll(Assembly.GetExecutingAssembly());
+        Register(RootAssemby);
+        Harmony.PatchAll(RootAssemby);
         _initialized = true;
         NoDepLogger.High("Sucessfully initialized VentFramework.");
     }
@@ -142,7 +142,7 @@ public partial class Vents : BasePlugin
     {
         int[] newBlockedArray = BlockedReceivers.TryGetValue(assembly, out int[]? blockedClients)
             ? blockedClients.AddToArray(clientId)
-            : new[] { clientId };
+            : [clientId];
         BlockedReceivers[assembly] = newBlockedArray;
     }
 

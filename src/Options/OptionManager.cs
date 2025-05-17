@@ -21,6 +21,8 @@ public class OptionManager
     public static string DefaultFile = "options.txt";
     internal static Dictionary<Assembly, List<OptionManager>> Managers = new();
     internal static Dictionary<String, Option> AllOptions = new();
+    
+    public int SaveIndex;
 
     private OrderedSet<Action<IOptionEvent>> optionEventHandlers = new();
     private readonly OrderedDictionary<string, Option> options = new();
@@ -139,9 +141,10 @@ public class OptionManager
         }
     }
 
-    internal void SaveAll(bool updateAll = true, string? fullName = null)
+    internal void SaveAll(bool updateAll = true, string? fullName = null, int? saveIndex = null)
     {
         if (fullName != null && fullName != file.FullName) return; // Stop saving for old files.
+        if (saveIndex != null && saveIndex != SaveIndex) return; // Stop saving for old files.
         NoDepLogger.Trace($"Saving Options to \"{filePath}\"", "OptionSave");
         if (updateAll) GetOptions().ForEach(o => essFile.WriteToCache(o));
         essFile.Dump(fullName ?? file.FullName);
@@ -152,9 +155,11 @@ public class OptionManager
     {
         if (saving) return;
         saving = true;
+        SaveIndex++;
+        int specificSaveIndex = SaveIndex;
         Async.ScheduleThreaded(() =>
         {
-            SaveAll(updateAll, fullName);
+            SaveAll(updateAll, fullName, specificSaveIndex);
             saving = false;
         }, delay);
     }

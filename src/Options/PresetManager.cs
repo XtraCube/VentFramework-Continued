@@ -7,12 +7,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VentLib.Logging.Default;
+using VentLib.Networking.RPC;
 using VentLib.Options.IO;
 using VentLib.Utilities;
 using VentLib.Utilities.Attributes;
+using VentLib.Utilities.Collections;
 using VentLib.Utilities.Extensions;
 using VentLib.Utilities.Harmony.Attributes;
 using VentLib.Utilities.Optionals;
+using VentLib.Version;
 using Encoding = System.Text.Encoding;
 using Object = UnityEngine.Object;
 
@@ -21,6 +24,7 @@ namespace VentLib.Options;
 [LoadStatic]
 public static class PresetManager
 {
+    public static bool IsSwitchingPresets { get; private set; } = false;
     internal static Preset CurrentPreset => AllPresets[_currentPreset - 1];
 
     private 
@@ -375,7 +379,31 @@ public static class PresetManager
 
         GameSettingMenu menu = _lastInitialized.Get();
         menu.FindChild<TextMeshPro>("GameSettingsLabel").text = CurrentPreset.Name;
+        IsSwitchingPresets = true;
         OptionManager.OnChangePreset();
+
+        // Sync options over to modded players.
+        List<VentRPC.NetworkedOption> allOptions = OptionManager.AllOptions.Values
+            .Where(o => o.Manager?.Flags().HasFlag(OptionManagerFlags.SyncOverRpc) ?? false)
+            .Select(o => new VentRPC.NetworkedOption(o, o.Index.OrElse(0)))
+            .ToList();
+
+        VersionControl vc = VersionControl.Instance;
+        if (vc.PassedClients.Count == PlayerControl.AllPlayerControls.Count)
+            // Every player is modded.
+            Vents.FindRPC((uint)VentCall.SyncOptions)!.Send(null, new BatchList<VentRPC.NetworkedOption>(allOptions));
+        else
+        {
+            List<int> clientIds = [];
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                if (vc.PassedClients.Contains(player.GetClientId()))
+                    // Filter for passed clients.
+                    clientIds.Add(player.GetClientId());
+            
+            if (clientIds.Any()) Vents.FindRPC((uint)VentCall.SyncOptions)!.Send(clientIds.ToArray(), new BatchList<VentRPC.NetworkedOption>(allOptions));
+        }
+        
+        IsSwitchingPresets = false;
     }
 
     [QuickPrefix(typeof(NameTextBehaviour), nameof(NameTextBehaviour.Start))]

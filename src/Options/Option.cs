@@ -177,12 +177,9 @@ public class Option: IRpcSendable<Option>
     public Option Read(MessageReader reader)
     {
         string qualifier = reader.ReadString();
-        int valueIndex = reader.ReadInt32();
         
         if (!OptionManager.AllOptions.TryGetValue(qualifier, out Option? targetOption))
             return new NullOption();
-        
-        targetOption.SetValue(valueIndex);
 
         return targetOption;
     }
@@ -190,13 +187,12 @@ public class Option: IRpcSendable<Option>
     public void Write(MessageWriter writer)
     {
         writer.Write(Qualifier());
-        writer.Write(Index.OrElse(0));
     }
 
     private void SyncOption()
     {
-        if (VersionControl.Instance == null) return;
-        if (!VersionControl.Instance.GetModdedPlayers().Any()) return;
+        if (PresetManager.IsSwitchingPresets) return; // Fix sending an RPC for every option (it would cause kicks if you had a lot of options!)
+        if (!VersionControl.Instance.PassedClients.Any()) return;
         if (Manager == null) return;
         if (!Manager.Flags().HasFlag(OptionManagerFlags.SyncOverRpc)) return;
         _modRPC.Send(null, new VentRPC.NetworkedOption(this, Index.OrElse(0)));
