@@ -135,7 +135,7 @@ public partial class Vents : BasePlugin
         Register(RootAssemby);
         Harmony.PatchAll(RootAssemby);
         _initialized = true;
-        NoDepLogger.High("Sucessfully initialized VentFramework.");
+        NoDepLogger.High("Successfully initialized VentFramework.");
     }
 
     public static void BlockClient(Assembly assembly, int clientId)

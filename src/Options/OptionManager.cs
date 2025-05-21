@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BepInEx;
 using VentLib.Logging.Default;
 using VentLib.Options.Events;
 using VentLib.Options.Interfaces;
@@ -17,7 +18,7 @@ namespace VentLib.Options;
 
 public class OptionManager
 {
-    public static string OptionPath => "BepInEx/config/";
+    public static string OptionPath => Paths.ConfigPath;
     public static string DefaultFile = "options.txt";
     internal static Dictionary<Assembly, List<OptionManager>> Managers = new();
     internal static Dictionary<String, Option> AllOptions = new();

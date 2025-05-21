@@ -1,3 +1,5 @@
+using AmongUs.InnerNet.GameDataMessages;
+
 namespace VentLib.Networking.RPC.Interfaces;
 
 // ReSharper disable once InconsistentNaming
@@ -6,6 +8,8 @@ public interface MassRpc: IStrongRpc
     public IChainRpc Start(uint netId, byte callId);
 
     public IChainRpc Start(uint netId, RpcCalls callId) => Start(netId, (byte)callId);
+
+    public MassRpc Add(BaseRpcMessage message);
 
     public MassRpc Add(IStrongRpc rpc);
 

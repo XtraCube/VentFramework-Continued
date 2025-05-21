@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using InnerNet;
 using VentLib.Logging;
@@ -20,7 +21,6 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
     private uint netId;
     private byte callId;
     private SendOption sendOption;
-    private bool immediate;
     private RpcBody? rpcBody;
     private bool isProtected;
     private bool isThreadSafe;
@@ -35,9 +35,6 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
     }
     
     public static MonoRpc Immediate(uint netId, RpcCalls callId, SendOption sendOption = SendOption.Reliable, RpcBody? rpcBody = null, bool isProtected = false) => Immediate(netId, (byte)callId, sendOption, rpcBody);
-
-    public static MonoRpc Standard(uint netId, RpcCalls callId, SendOption sendOption = SendOption.Reliable, RpcBody? rpcBody = null, bool isProtected = false) => Standard(netId, (byte)callId, sendOption, rpcBody);
-    
     public static MonoRpc Immediate(uint netId, byte callId, SendOption sendOption = SendOption.Reliable, RpcBody? rpcBody = null, bool isProtected = false)
     {
         return new RpcV3
@@ -45,21 +42,20 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
             netId = netId,
             callId = callId,
             sendOption = sendOption,
-            immediate = true,
             rpcBody = rpcBody ?? new RpcBody(),
             isProtected = isProtected
         };
     }
-    
-    public static MonoRpc Standard(uint netId, byte callId, SendOption sendOption = SendOption.Reliable, RpcBody? rpcBody = null, bool isProtected = false)
+
+    public static MonoRpc Immediate(BaseRpcMessage message, SendOption sendOption = SendOption.Reliable,
+        RpcBody? rpcBody = null, bool isProtected = false)
     {
-        return new RpcV3
+        return new RpcV3()
         {
-            netId = netId,
-            callId = callId,
+            netId = message.rpcObjectNetId,
+            callId = (byte)message.RpcType,
             sendOption = sendOption,
-            immediate = false,
-            rpcBody = rpcBody ?? new RpcBody(),
+            rpcBody = (rpcBody ?? new RpcBody()).Write(message),
             isProtected = isProtected
         };
     }
@@ -81,6 +77,13 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
         RpcV3 v3 = (RpcV3)rpc;
         if (v3.chainedRpcs == null!) chainedRpcs.Add(v3);
         else chainedRpcs.AddRange(v3.FlattenChained());
+        return this;
+    }
+
+    public MassRpc Add(BaseRpcMessage message)
+    {
+        if (chainedRpcs == null!) return this;
+        chainedRpcs.Add((RpcV3)Immediate(message));
         return this;
     }
     
@@ -237,7 +240,6 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
             netId = netId,
             callId = callId,
             sendOption = sendOption,
-            immediate = immediate,
             rpcBody = rpcBody?.Clone(),
             isProtected = isProtected,
             isThreadSafe = isThreadSafe
@@ -294,17 +296,14 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
 
         Profiler.Sample sample = Profilers.Global.Sampler.Sampled();
 
-        MessageWriter writer = !immediate
-            ? AmongUsClient.Instance.StartRpc(netId, callId, sendOption)
-            : AmongUsClient.Instance.StartRpcImmediately(netId, callId, sendOption, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netId, callId, sendOption, clientId);
         
         rpcBody?.WriteAll(writer);
         
         lastMeta = GenerateMeta(clientId, writer.Length);
         lastMeta.Notify();
 
-        if (!immediate) writer.EndMessage();
-        else AmongUsClient.Instance.FinishRpcImmediately(writer);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
         
         sample.Stop();
     }
@@ -314,7 +313,6 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
         return new RpcMeta
         {
             CallId = callId,
-            Immediate = immediate,
             NetId = netId,
             Recipient = clientId,
             RequiresHost = isProtected,
@@ -355,7 +353,6 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
         {
             ChildMeta = childrenMeta,
             CallId = callId,
-            Immediate = immediate,
             NetId = netId,
             Recipient = clientId,
             RequiresHost = isProtected,

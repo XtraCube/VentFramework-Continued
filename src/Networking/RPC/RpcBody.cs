@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using InnerNet;
 using VentLib.Logging;
@@ -106,6 +107,13 @@ public class RpcBody
     {
         Arguments.Add(innerNetObject);
         inserters.Add(InnerNetObjectInserter.Instance);
+        return this;
+    }
+
+    public RpcBody Write(BaseRpcMessage message)
+    {
+        Arguments.Add(message);
+        inserters.Add(RpcMessageInserter.Instance);
         return this;
     }
 
@@ -237,6 +245,7 @@ public class RpcBody
         RegisterInserter(new UshortInserter());
         RegisterInserter(new Vector2Inserter());
         RegisterInserter(new EnumerableInserter());
+        RegisterInserter(new RpcMessageInserter());
         SetInserter(typeof(PlayerControl), typeof(InnerNetObject));
     }
 }

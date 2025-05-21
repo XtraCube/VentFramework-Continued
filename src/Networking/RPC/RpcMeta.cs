@@ -14,7 +14,6 @@ public class RpcMeta
     public int Recipient { get; internal set; }
     public uint NetId { get; internal set; }
     public byte CallId { get; internal set; }
-    public bool Immediate { get; internal set; }
     public bool RequiresHost { get; internal set; }
     public int PacketSize { get; internal set; }
     public List<object> Arguments { get; internal set; } = null!;

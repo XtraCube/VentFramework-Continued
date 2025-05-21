@@ -37,7 +37,7 @@ internal static class RpcManager
         uint senderId = reader.ReadPackedUInt32();
         
         PlayerControl? player = null;
-        if (AmongUsClient.Instance.allObjectsFast.TryGet(senderId, out InnerNetObject? netObject))
+        if (AmongUsClient.Instance.allObjects.allObjectsFast.TryGet(senderId, out InnerNetObject? netObject))
         {
             player = netObject!.TryCast<PlayerControl>();
             if (player != null) Vents.LastSenders[customId] = player;

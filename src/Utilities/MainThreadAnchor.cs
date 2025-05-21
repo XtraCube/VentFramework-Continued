@@ -75,6 +75,7 @@ public static class MainThreadAnchor
         {
             action();
             barrier.SignalAndWait();
+            barrier.Dispose();
         });
         barrier.SignalAndWait();
     }
