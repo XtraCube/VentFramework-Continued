@@ -1,4 +1,6 @@
 using Hazel;
+using VentLib.Logging.Default;
+using VentLib.Utilities.Extensions;
 
 namespace VentLib.Networking.RPC;
 
@@ -23,19 +25,48 @@ public static class GeneralRPC
 
         // AmongUsClient.Instance.SendOrDisconnect(writer);
         // writer.Recycle();
-        MessageWriter writer = MessageWriter.Get(sendOption);
-        writer.StartMessage((byte)(clientId == -1 ? 5 : 6));
-        writer.Write(AmongUsClient.Instance.GameId);
-
-        if (clientId != -1) writer.WritePacked(clientId);
+        MessageWriter? writer = null;
+        int num = 0;
         
         foreach (NetworkedPlayerInfo playerInfo in GameData.Instance.AllPlayers)
         {
+            if (writer == null)
+            {
+                writer = MessageWriter.Get(sendOption);
+                writer.StartMessage((byte)(clientId == -1 ? 5 : 6));
+                writer.Write(AmongUsClient.Instance.GameId);
+
+                if (clientId != -1) writer.WritePacked(clientId);
+            }
+            int length = writer.Length;
+            int position = writer.Position;
             writer.StartMessage(1);
             writer.WritePacked(playerInfo.NetId);
             playerInfo.Serialize(writer, false);
             writer.EndMessage();
+            if (length > NetworkRules.MaxPacketSize)
+            {
+                if (num == 0)
+                {
+                    NoDepLogger.Fatal("1 Player ({0}) exceeded max packet size: {1}".Formatted(playerInfo.Object != null ? playerInfo.Object.name : playerInfo.PlayerName, 
+                        NetworkRules.MaxPacketSize));
+                }
+                else
+                {
+                    writer.Length = length;
+                    writer.Position = position;
+                }
+
+                num = 0;
+                writer.EndMessage();
+                AmongUsClient.Instance.SendOrDisconnect(writer);
+                writer.Recycle();
+                writer = null;
+            }
+            else num++;
         }
+
+        if (writer == null) return;
         writer.EndMessage();
         AmongUsClient.Instance.SendOrDisconnect(writer);
         writer.Recycle();

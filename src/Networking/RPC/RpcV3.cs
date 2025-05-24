@@ -93,6 +93,7 @@ public class RpcV3: MonoRpc, MassRpc, IChainRpc
         {
             netId = netId,
             callId = callId,
+            sendOption = sendOption,
             rpcBody = new RpcBody(),
             parentRpc = this
         };
