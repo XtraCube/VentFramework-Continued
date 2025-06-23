@@ -13,10 +13,10 @@ internal class LanguageSetPatch
     internal static string CurrentLanguage = DataManager.Settings.Language.CurrentLanguage.ToString();
     
     [SuppressMessage("ReSharper", "UnusedMember.Local")]
-    private static void Postfix([HarmonyArgument(0)] TranslatedImageSet lang)
+    private static void Postfix([HarmonyArgument(0)] SupportedLangs lang)
     {
-        log.Info($"Loaded Language: {lang.languageID}");
-        CurrentLanguage = lang.languageID.ToString();
+        log.Info($"Loaded Language: {lang}");
+        CurrentLanguage = lang.ToString();
         Localizer.Localizers.Values.ForEach(l => l.CurrentLanguage = CurrentLanguage);
     }
 }
