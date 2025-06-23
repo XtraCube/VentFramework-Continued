@@ -1,6 +1,8 @@
+extern alias JetbrainsAnnotations;
 using System;
 using System.Reflection;
 using HarmonyLib;
+using JetbrainsAnnotations::JetBrains.Annotations;
 using MonoMod.RuntimeDetour;
 using VentLib.Logging;
 using VentLib.Networking.Helpers;
@@ -9,6 +11,7 @@ using VentLib.Networking.RPC.Attributes;
 using VentLib.Utilities.Extensions;
 
 namespace VentLib.Networking.RPC;
+
 
 public class ModRPC
 {

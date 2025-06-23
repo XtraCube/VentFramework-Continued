@@ -10,6 +10,7 @@ using VentLib.Localization.Patches;
 using VentLib.Logging;
 using VentLib.Utilities.Collections;
 using VentLib.Utilities.Extensions;
+using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 namespace VentLib.Localization;
@@ -186,8 +187,15 @@ public class Localizer
                 language.File = f;
                 language.Localizer = this;
                 return language;
-            } catch (Exception e) {
-                log.Exception($"Unable to load Language File \"{f.Name}\": ", e);
+            }
+            catch (YamlException e)
+            {
+                log.Exception($"Unable to load Language File \"{f.Name}\". Line {{ex.Start.Line}}, Column {{ex.Start.Column}}");
+                return null;
+            }
+            catch (Exception e) {
+                log.Exception($"Unable to load Language File \"{f.Name}\".");
+                log.Exception(e);
                 return null;
             }
         }).ToList();
