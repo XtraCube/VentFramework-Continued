@@ -95,8 +95,8 @@ public class RoleOption: GameOption, IGameOptionInstance
     internal void BindPlusMinusButtons()
     {
         Behaviour.IfPresent(b => {
-            if (Children.FirstOrDefault(child => child!.Name() == "Maximum", null) != null) {
-                MaximumOption = (Children.Find(child => child.Name() == "Maximum") as FloatOption)!;
+            if (Children.FirstOrDefault(child => child!.Key() == "Maximum", null) != null) {
+                MaximumOption = (Children.Find(child => child.Key() == "Maximum") as FloatOption)!;
                 PassiveButton plusButtonNumber = b.FindChild<PassiveButton>("Role #/PlusButton");
                 PassiveButton minusButtonNumber = b.FindChild<PassiveButton>("Role #/MinusButton");
 
@@ -119,7 +119,7 @@ public class RoleOption: GameOption, IGameOptionInstance
             } else {
                 b.transform.FindChild("Role #").gameObject.SetActive(false);
             }
-            PercentageOption = (Children.Find(child => child.Name() == "Percentage") as FloatOption)!;
+            PercentageOption = (Children.Find(child => child.Key() == "Percentage") as FloatOption)!;
             PassiveButton plusButton = b.FindChild<PassiveButton>("Chance %/PlusButton");
             PassiveButton minusButton = b.FindChild<PassiveButton>("Chance %/MinusButton");
 
