@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BepInEx;
 using VentLib.Utilities.Extensions;
 
 namespace VentLib.Logging;
@@ -13,10 +14,10 @@ public class LogDirectory
     public static string Directory
     {
         get => _path;
-        set => _directory = ValidateDirectory(new DirectoryInfo(_path = value));
+        set => _directory = ValidateDirectory(new DirectoryInfo(Path.Combine(Paths.GameRootPath, _path = value)));
     }
     private static string _path = "";
-    private static DirectoryInfo _directory = new("logs");
+    private static DirectoryInfo _directory = new(Path.Combine(Paths.GameRootPath, "logs"));
 
     public static IEnumerable<FileInfo> GetLogs(string regex, DirectoryInfo? dir = null)
     {

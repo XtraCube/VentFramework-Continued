@@ -59,7 +59,7 @@ public static class PresetManager
         while (true)
         {
             _nextPresetID++;
-            string presetPath = Path.Join(OptionManager.OptionPath, $"Preset{_nextPresetID}");
+            string presetPath = Path.Combine(OptionManager.OptionPath, $"Preset{_nextPresetID}");
             DirectoryInfo presetDirectory = new(presetPath);
             if (presetDirectory.Exists) AllPresets.Add(new Preset(_nextPresetID));
             else break;

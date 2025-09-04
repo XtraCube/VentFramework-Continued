@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+using BepInEx;
 using VentLib.Options;
 using VentLib.Options.IO;
 using YamlDotNet.Serialization;
@@ -23,7 +24,7 @@ public class LocalizerSettings
             .BuildAndRegister(manager);
 
         LanguageFolder = languageFolderOption.GetValue<string>();
-        LanguageDirectory = new DirectoryInfo(LanguageFolder);
+        LanguageDirectory = new DirectoryInfo(Path.Combine(Paths.GameRootPath, LanguageFolder));
         if (!LanguageDirectory.Exists) LanguageDirectory.Create();
     }
 

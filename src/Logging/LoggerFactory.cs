@@ -1,6 +1,8 @@
 using System;
+using UnityEngine;
 using VentLib.Logging.Default;
 using VentLib.Utilities;
+using VentLib.Utilities.Attributes;
 
 namespace VentLib.Logging;
 
@@ -11,7 +13,7 @@ public static class LoggerFactory
         FactoryInstance = new DefaultLoggerFactory();
         Logger.IsLoaded = true;
     }
-    
+
     internal static ILoggerFactory FactoryInstance;
 
     public static T GetLogger<T>(Type cls) where T : Logger => FactoryInstance.GetLogger<T>(cls);

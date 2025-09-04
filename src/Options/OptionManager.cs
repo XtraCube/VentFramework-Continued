@@ -37,7 +37,7 @@ public class OptionManager
     {
         string name = AssemblyUtils.GetAssemblyRefName(assembly);
         string optionPath;
-        if (managerFlags.HasFlag(OptionManagerFlags.IgnorePreset)) optionPath = name == "root" ? OptionPath : Path.Join(OptionPath, name);
+        if (managerFlags.HasFlag(OptionManagerFlags.IgnorePreset)) optionPath = name == "root" ? OptionPath : Path.Combine(OptionPath, name);
         else optionPath = Path.Combine(OptionPath, PresetManager.CurrentPreset.FolderName(), name == "root" ? "" : name);
         DirectoryInfo optionDirectory = new(optionPath);
         if (!optionDirectory.Exists) optionDirectory.Create();
