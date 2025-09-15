@@ -64,7 +64,7 @@ public class GameOptionTab : IGameOptionTab
 
     public virtual void Setup(RolesSettingsMenu menu)
     {
-        TabButton.OrElseSet(() => Object.Instantiate<RoleSettingsTabButton>(menu.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, menu.tabParent));
+        TabButton.OrElseSet(() => Object.Instantiate<RoleSettingsTabButton>(menu.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, menu.roleSettingsTabParent));
         var roleMenu = RelatedMenu.OrElseSet(() => menu);
 
         innerMenu.OrElseSet(() => {

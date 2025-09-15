@@ -13,7 +13,7 @@ public abstract class VanillaTab: IGameOptionTab
     protected readonly StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(VanillaTab));
     protected UnityOptional<RoleSettingsTabButton> TabButton = UnityOptional<RoleSettingsTabButton>.Null();
     protected UnityOptional<RolesSettingsMenu> RelatedMenu = UnityOptional<RolesSettingsMenu>.Null();
-    protected RoleRulesCategory roleCategory = null!;
+    protected RoleBehaviour roleBehaviour = null!;
 
     private OrderedSet<GameOption> options = new();
     private readonly List<Action<IGameOptionTab>> callbacks = new();
@@ -29,7 +29,7 @@ public abstract class VanillaTab: IGameOptionTab
     {
         log.Info($"Activated Vanilla Tab: \"{Name}\"", "TabSwitch");
         PassiveButton().IfPresent(pb => pb.SelectButton(true));
-        RelatedMenu.IfPresent(menu => menu.ChangeTab(roleCategory, TabButton.Get().Button));
+        RelatedMenu.IfPresent(menu => menu.ChangeTab(roleBehaviour, TabButton.Get().Button));
     }
     
     public void Deactivate()

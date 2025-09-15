@@ -25,8 +25,12 @@ namespace VentLib.Options.UI.Controllers;
 public static class RoleOptionController
 {
     private static readonly StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(RoleOptionController));
-    private static readonly List<IGameOptionTab> BuiltinGameTabs = new List<IGameOptionTab>() { new EngineerTab(), new GuardianAngelTab(), new ScientistTab(),
-                                                                                                new TrackerTab(), new NoisemakerTab(), new ShapeshifterTab(), new PhantomTab() };
+
+    private static readonly List<IGameOptionTab> BuiltinGameTabs =
+    [
+        new EngineerTab(), new GuardianAngelTab(), new ScientistTab(), new TrackerTab(), new DetectiveTab(), 
+        new NoisemakerTab(), new ShapeshifterTab(), new PhantomTab(), new ViperTab(),
+    ];
     private static UnityOptional<RolesSettingsMenu> _lastInitialized = new();
     internal static IRoleOptionRender _renderer = new RoleOptionsRenderer();
     private static OrderedSet<Action<IControllerEvent>> _tabEvents = new();
@@ -50,7 +54,7 @@ public static class RoleOptionController
         }
     }
 
-    internal static IGameOptionTab[] AllTabs(bool allowIgnoredFiles = false) => BuiltinGameTabs.Concat(Tabs).Where(t => allowIgnoredFiles | !t.Ignore()).ToArray();
+    internal static IGameOptionTab[] AllTabs(bool allowIgnoredTabs = false) => BuiltinGameTabs.Concat(Tabs).Where(t => allowIgnoredTabs | !t.Ignore()).ToArray();
 
     public static void Enable() => Enabled = true;
     

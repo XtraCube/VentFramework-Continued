@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using UnityEngine;
 using VentLib.Utilities.Optionals;
 
@@ -27,13 +28,13 @@ public sealed class TrackerTab: VanillaTab
     public override void Setup(RolesSettingsMenu menu)
     {
         RelatedMenu = UnityOptional<RolesSettingsMenu>.NonNull(menu);
-        roleCategory = GameManager.Instance.GameSettingsList.AllRoles.ToArray().Where(cat => cat.Role.Role == AmongUs.GameOptions.RoleTypes.Tracker).First();
+        roleBehaviour = DestroyableSingleton<RoleManager>.Instance.GetRole(RoleTypes.Tracker);
 
         RoleSettingsTabButton button = UnityEngine.Object.Instantiate<RoleSettingsTabButton>(menu.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, menu.AllButton.transform.parent);
         TabButton = UnityOptional<RoleSettingsTabButton>.NonNull(button);
         menu.roleTabs.Add(button.Button);
-        button.SetButton(roleCategory.Role, (Action)(() => {
-            menu.ChangeTab(roleCategory, button.Button);
+        button.SetButton(roleBehaviour, (Action)(() => {
+            menu.ChangeTab(roleBehaviour, button.Button);
         }));
         highlight = UnityOptional<PassiveButton>.NonNull(button.Button);
         button.Button.OnClick.AddListener((Action)HandleClick);
