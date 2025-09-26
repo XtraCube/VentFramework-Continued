@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using UnityEngine;
 using VentLib.Logging.Default;
 using VentLib.Options.Events;
 using VentLib.Options.Interfaces;

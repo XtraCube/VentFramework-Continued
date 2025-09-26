@@ -12,7 +12,9 @@ namespace VentLib.Utilities;
 
 public class Async
 {
-    private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(Async));
+    private static StandardLogger? _log;
+    private static StandardLogger log => _log ??= LoggerFactory.GetLogger<StandardLogger>(typeof(Async));
+
     internal static AUCWrapper AUCWrapper { get; } = new();
 
     /// <summary>

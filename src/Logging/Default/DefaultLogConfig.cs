@@ -66,7 +66,7 @@ public class DefaultLogConfig
                 .SubOption(sub => sub
                     .Name("Log Directory")
                     .Description("Directory for storing log files.")
-                    .Value("logs")
+                    .Value("lotus_logs")
                     .IOSettings(settings => settings.UnknownValueAction = ADEAnswer.Allow)
                     .Build())
                 .SubOption(sub => sub

@@ -4,12 +4,14 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using UnityEngine;
 
 namespace VentLib.Logging.Appenders;
 
 public class FlushingMemoryAppender: InMemoryAppender
 {
-    private static readonly StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(FlushingMemoryAppender));
+    private static StandardLogger? _log;
+    private static StandardLogger log => _log ??= LoggerFactory.GetLogger<StandardLogger>(typeof(FlushingMemoryAppender));
     private DirectoryInfo TargetDirectory { get; }
     public string FileNamePattern;
     public LogLevel MinLevel { get; set; }
@@ -34,7 +36,7 @@ public class FlushingMemoryAppender: InMemoryAppender
     public FlushingMemoryAppender(string directoryPath, string filenamePattern, LogLevel? minLevel = null)
     {
         FileNamePattern = filenamePattern;
-        TargetDirectory = new DirectoryInfo(directoryPath);
+        TargetDirectory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, directoryPath));
         if (!TargetDirectory.Exists) TargetDirectory.Create();
         MinLevel = minLevel ?? LogLevel.Info;
         flushingThread = new Thread(FlushMemory) { IsBackground = true };

@@ -12,7 +12,17 @@ namespace VentLib.Utilities.Extensions;
 
 public static class EnumerableExtensions
 {
-    private static StandardLogger log = LoggerFactory.GetLogger<StandardLogger>(typeof(EnumerableExtensions));
+    private static StandardLogger? _log;
+    
+    private static StandardLogger log
+    {
+        get
+        {
+            _log ??= LoggerFactory.GetLogger<StandardLogger>(typeof(EnumerableExtensions));
+            return _log;
+        }
+    }
+
     /// <summary>
     /// Maps a sequence into a new type, keeping all non-null values.
     /// </summary>
