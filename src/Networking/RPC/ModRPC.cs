@@ -42,7 +42,7 @@ public class ModRPC
             throw new ArgumentException($"Unable to Register: {targetMethod.Name}. Reason: VentLib does not current allow for methods without declaring types");
 
         Assembly = declaringType.Assembly;
-        Hook hook = RpcHookHelper.Generate(this);
+        Detour hook = RpcHookHelper.Generate(this);
         trampoline = hook.GenerateTrampoline();
 
         instanceSupplier = () =>
